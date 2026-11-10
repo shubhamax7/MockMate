@@ -30,10 +30,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { DEMO_INTERVIEWS } from "@/data/fixtures";
 import {
   getInterviewScript,
   getSession,
   markReportAvailable,
+  type StoredSession,
 } from "@/lib/repo";
 import { formatClock, modeLabel, roleLabel } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -63,7 +65,17 @@ export default function SessionPage() {
   const params = useParams<{ id: string }>();
   const id = params?.id ?? "";
   const router = useRouter();
-  const session = getSession(id);
+  const [session, setSession] = useState<StoredSession | undefined>(() => {
+    return DEMO_INTERVIEWS.some((d) => d.id === id)
+      ? getSession(id)
+      : undefined;
+  });
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setSession(getSession(id));
+  }, [id]);
 
   const [phase, setPhase] = useState<Phase>("connecting");
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -188,6 +200,14 @@ export default function SessionPage() {
     const interval = setInterval(() => setElapsed((s) => s + 1), 1000);
     return () => clearInterval(interval);
   }, [phase]);
+
+  if (!mounted && !session) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <p className="text-sm text-muted-foreground">Loading session…</p>
+      </div>
+    );
+  }
 
   if (!session) {
     return (

@@ -29,7 +29,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { getSession } from "@/lib/repo";
+import { DEMO_INTERVIEWS } from "@/data/fixtures";
+import { getSession, type StoredSession } from "@/lib/repo";
 import { difficultyLabel, modeLabel, roleLabel } from "@/lib/format";
 
 type MicState =
@@ -39,7 +40,17 @@ export default function LobbyPage() {
   const params = useParams<{ id: string }>();
   const id = params?.id ?? "";
   const router = useRouter();
-  const session = getSession(id);
+  const [session, setSession] = useState<StoredSession | undefined>(() => {
+    return DEMO_INTERVIEWS.some((d) => d.id === id)
+      ? getSession(id)
+      : undefined;
+  });
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setSession(getSession(id));
+  }, [id]);
 
   const [micState, setMicState] = useState<MicState>("untested");
   const [micMessage, setMicMessage] = useState<string | null>(null);
@@ -64,6 +75,14 @@ export default function LobbyPage() {
   };
 
   useEffect(() => stopEverything, []);
+
+  if (!mounted && !session) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <p className="text-sm text-muted-foreground">Loading session…</p>
+      </div>
+    );
+  }
 
   if (!session) {
     return (

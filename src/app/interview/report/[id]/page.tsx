@@ -27,9 +27,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useEffect, useState } from "react";
+import { DEMO_INTERVIEWS } from "@/data/fixtures";
 import { getReport } from "@/lib/repo";
 import { modeLabel, roleLabel } from "@/lib/format";
-import type { Confidence, MetricRecord } from "@/types";
+import type { Confidence, MetricRecord, Report } from "@/types";
 
 const CONFIDENCE_LABELS: Record<Confidence, string> = {
   high: "High confidence",
@@ -117,7 +119,23 @@ function EvidenceBlock({
 export default function ReportPage() {
   const params = useParams<{ id: string }>();
   const id = params?.id ?? "";
-  const report = getReport(id);
+  const [report, setReport] = useState<Report | undefined>(() => {
+    return DEMO_INTERVIEWS.some((d) => d.id === id) ? getReport(id) : undefined;
+  });
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setReport(getReport(id));
+  }, [id]);
+
+  if (!mounted && !report) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <p className="text-sm text-muted-foreground">Loading report…</p>
+      </div>
+    );
+  }
 
   if (!report) {
     return (
