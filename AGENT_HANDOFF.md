@@ -187,10 +187,16 @@ Route (app)
 
 ---
 
-## 6. Exact Next Steps
+## 6. Verification & Git Checkpoint Status
 
-When ready to resume:
-1. Update `eslint.config.js` to add `".next"` to the `ignores` array.
-2. Run `bun run format` (`prettier --write .`) to sync code formatting with Prettier rules.
-3. Run `bun run lint` to verify that linting completes quickly with zero errors.
-4. Run `git status` / commit changes cleanly to `migration/tanstack-to-nextjs` branch without force pushing (respecting the Lovable sync policy).
+- **TypeScript Typecheck (`bun x tsc --noEmit`):** PASSED (0 errors)
+- **Unit & Routing Tests (`bun run test`):** PASSED (1/1 test passed)
+- **Next.js Production Build (`bun run build`):** PASSED (13 routes generated)
+- **ESLint Linting (`bun run lint`):** PASSED (0 errors, 11 fast-refresh warnings)
+- **Git Checkpoint Commit:** `81da4b8` on branch `migration/tanstack-to-nextjs`
+- **Working Tree:** Clean (all secrets, build caches, and `.next` excluded)
+
+## 7. Remaining Tasks for Post-Migration Review
+
+1. End-to-end browser walkthrough (`bun run dev`) of all 13 routes to visually verify UI themes, animations, audio meters, camera streams, and report downloads.
+2. Optional Lovable synchronization / PR creation from `migration/tanstack-to-nextjs` to `main`.
