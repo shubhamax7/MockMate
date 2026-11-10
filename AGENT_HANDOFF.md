@@ -198,5 +198,39 @@ Route (app)
 
 ## 7. Remaining Tasks for Post-Migration Review
 
-1. End-to-end browser walkthrough (`bun run dev`) of all 13 routes to visually verify UI themes, animations, audio meters, camera streams, and report downloads.
+1. End-to-end browser walkthrough (`bun run dev`) of all 13 routes to visually verify UI themes, animations, audio meters, camera streams, and report downloads. (COMPLETED)
 2. Optional Lovable synchronization / PR creation from `migration/tanstack-to-nextjs` to `main`.
+
+---
+
+## 8. Post-Migration Browser Interactive Smoke Testing Results
+
+**Date & Time:** 2026-11-10T22:15:00+05:30  
+**Test Engine:** Puppeteer-Core Driving Google Chrome 156 (`--use-fake-ui-for-media-stream`, `--use-fake-device-for-media-stream`)
+
+### A. Routes Tested & Verified
+1. `/interview/new`: Multi-step setup wizard (Step 1 Mode, Step 2 Preferences, Step 3 Consent, Step 4 Review), form validation (0 domains selected alert, non-PDF file upload alert, valid PDF handling, required consent enforcement), submission, and client-side navigation.
+2. `/interview/lobby/[id]`: Hardware microphone permission handling, AudioContext live volume meter (average calculation responding to live audio), simulated microphone fallback, system readiness checklist, and "Begin interview" navigation.
+3. `/interview/session/[id]`: Real-time camera video preview element with active stream, AI interviewer avatar rendering, 6-phase state machine progression (connecting -> ready -> interviewer speaking -> listening -> processing -> completing), interactive controls (mute/unmute, show/hide transcription), exit dialog with cancellation and confirmation to report.
+4. `/interview/report/[id]`: Technical and communication assessment scorecards, confidence indicators, observable evidence citations with verbatim candidate quotes, timestamps, questions, strengths, growth areas, and printable report trigger (`window.print`).
+5. `/coach` and `/coach/session/[id]`: 5 exercise drill cards, interactive default hint level dropdown, navigation to drill session, progressive hint reveal, attempt draft textarea with live word counter, attempt submission, attempt comparison, and model answer display.
+6. `/progress`: Recharts responsive container, SVG multi-line charts, score delta metrics (`62 → 78 (+16)`, `58 → 72 (+14)`), practised skills list, and mobile responsiveness at 375x667.
+7. Remaining Workspace Routes (`/`, `/dashboard`, `/history`, `/settings`, `/settings/privacy`): All return HTTP 200 with 0 console errors and 0 network failures.
+
+### B. Issues Found, Root Cause Analysis, and Solutions Applied
+- **Issue Discovered**: Hydration mismatch (`Hydration failed because the server rendered HTML didn't match the client`) when performing a hard reload or direct URL visit on dynamic interview routes (`/interview/lobby/[id]`, `/interview/session/[id]`, `/interview/report/[id]`) for sessions created in browser `localStorage`.
+- **Reproduction Steps**:
+  1. Complete `/interview/new` wizard to generate a demo session (e.g. `s-mwaqvio3-5ddfde05`).
+  2. Navigate into `/interview/lobby/s-mwaqvio3-5ddfde05`.
+  3. Perform a hard browser reload (`Cmd+R` / `F5`).
+  4. Server SSR renders the fallback card "Interview not found" because `localStorage` does not exist on the server (`typeof window === "undefined"`).
+  5. Browser client hydrates and reads `localStorage`, attempting to render the lobby tree into the 404 card, throwing a React 19 hydration mismatch error.
+- **Root Cause**: Top-level synchronous evaluation of `getSession(id)` / `getReport(id)` during render.
+- **Fix Applied** (`commit d98d9d3`): Synchronized local session retrieval with a mounted state pattern (`useState` initialized with static fixtures for SSR matching + `useEffect` to retrieve local storage sessions on mount). A matching loading placeholder is rendered when `!mounted && !session`, guaranteeing 100% server-client HTML consistency.
+- **Verification**: Re-testing hard page refreshes on `/interview/lobby/[id]`, `/interview/session/[id]`, and `/interview/report/[id]` yielded **0 console errors, 0 hydration warnings, and 0 network failures**.
+
+### C. Final Git Checkpoints
+- `81da4b8`: `feat: migrate MockMate from TanStack Start to Next.js App Router`
+- `524ecce`: `docs: update AGENT_HANDOFF with verification results and commit reference`
+- `d98d9d3`: `fix: resolve SSR hydration mismatch on dynamic interview session routes`
+- Working Tree: Clean
