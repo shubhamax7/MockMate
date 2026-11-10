@@ -1,11 +1,13 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+"use client";
+
+import Link from "next/link";
 import { Mic } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { DemoLabel } from "@/components/demo-label";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -14,29 +16,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { listInterviews } from "@/lib/repo";
-import { difficultyLabel, formatDate, modeLabel, roleLabel } from "@/lib/format";
+import {
+  difficultyLabel,
+  formatDate,
+  modeLabel,
+  roleLabel,
+} from "@/lib/format";
 import type { InterviewSummary } from "@/types";
 
-export const Route = createFileRoute("/_app/history")({
-  head: () => ({
-    meta: [
-      { title: "Interview history — MockMate Interview Coach" },
-      {
-        name: "description",
-        content: "Filterable list of your previous mock interviews and guided practice sessions.",
-      },
-      { property: "og:title", content: "Interview history — MockMate Interview Coach" },
-      {
-        property: "og:description",
-        content: "Your previous mock interviews and guided practice sessions.",
-      },
-      { property: "og:type", content: "website" },
-    ],
-  }),
-  component: HistoryPage,
-});
-
-function HistoryPage() {
+export default function HistoryPage() {
   const [interviews, setInterviews] = useState<InterviewSummary[]>([]);
   const [modeFilter, setModeFilter] = useState("all");
   const [roleFilter, setRoleFilter] = useState("all");
@@ -45,7 +33,10 @@ function HistoryPage() {
     setInterviews(listInterviews());
   }, []);
 
-  const roles = useMemo(() => Array.from(new Set(interviews.map((i) => i.role))), [interviews]);
+  const roles = useMemo(
+    () => Array.from(new Set(interviews.map((i) => i.role))),
+    [interviews],
+  );
 
   const filtered = interviews.filter(
     (i) =>
@@ -76,7 +67,10 @@ function HistoryPage() {
               </SelectContent>
             </Select>
             <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger className="w-40" aria-label="Filter by target role">
+              <SelectTrigger
+                className="w-40"
+                aria-label="Filter by target role"
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -94,12 +88,15 @@ function HistoryPage() {
         {filtered.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col items-center gap-3 py-12 text-center">
-              <p className="text-sm font-medium">No sessions match these filters</p>
+              <p className="text-sm font-medium">
+                No sessions match these filters
+              </p>
               <p className="max-w-sm text-sm text-muted-foreground">
-                Try clearing the filters, or start a new mock interview to build your history.
+                Try clearing the filters, or start a new mock interview to build
+                your history.
               </p>
               <Button asChild>
-                <Link to="/interview/new">
+                <Link href="/interview/new">
                   <Mic className="size-4" /> Start a mock interview
                 </Link>
               </Button>
@@ -111,8 +108,8 @@ function HistoryPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <caption className="sr-only">
-                    Previous interviews with date, role, mode, domain, duration and report
-                    availability
+                    Previous interviews with date, role, mode, domain, duration
+                    and report availability
                   </caption>
                   <thead>
                     <tr className="border-b border-border text-left text-xs text-muted-foreground">
@@ -125,13 +122,22 @@ function HistoryPage() {
                       <th scope="col" className="px-4 py-3 font-medium">
                         Mode
                       </th>
-                      <th scope="col" className="hidden px-4 py-3 font-medium md:table-cell">
+                      <th
+                        scope="col"
+                        className="hidden px-4 py-3 font-medium md:table-cell"
+                      >
                         Domain
                       </th>
-                      <th scope="col" className="hidden px-4 py-3 font-medium sm:table-cell">
+                      <th
+                        scope="col"
+                        className="hidden px-4 py-3 font-medium sm:table-cell"
+                      >
                         Duration
                       </th>
-                      <th scope="col" className="hidden px-4 py-3 font-medium sm:table-cell">
+                      <th
+                        scope="col"
+                        className="hidden px-4 py-3 font-medium sm:table-cell"
+                      >
                         Difficulty
                       </th>
                       <th scope="col" className="px-4 py-3 font-medium">
@@ -141,12 +147,19 @@ function HistoryPage() {
                   </thead>
                   <tbody>
                     {filtered.map((interview) => (
-                      <tr key={interview.id} className="border-b border-border last:border-0">
+                      <tr
+                        key={interview.id}
+                        className="border-b border-border last:border-0"
+                      >
                         <td className="px-4 py-3 tabular-nums">
                           {formatDate(interview.createdAt)}
                         </td>
-                        <td className="px-4 py-3">{roleLabel(interview.role)}</td>
-                        <td className="px-4 py-3">{modeLabel(interview.mode)}</td>
+                        <td className="px-4 py-3">
+                          {roleLabel(interview.role)}
+                        </td>
+                        <td className="px-4 py-3">
+                          {modeLabel(interview.mode)}
+                        </td>
                         <td className="hidden px-4 py-3 text-muted-foreground md:table-cell">
                           {interview.domains.join(", ")}
                         </td>
@@ -159,7 +172,7 @@ function HistoryPage() {
                         <td className="px-4 py-3">
                           {interview.reportAvailable ? (
                             <Button variant="ghost" size="sm" asChild>
-                              <Link to="/interview/report/$id" params={{ id: interview.id }}>
+                              <Link href={`/interview/report/${interview.id}`}>
                                 View
                               </Link>
                             </Button>
@@ -179,8 +192,9 @@ function HistoryPage() {
         )}
 
         <p className="text-xs text-muted-foreground">
-          Guided practice sessions produce coaching feedback in the session itself, so they have no
-          separate report. Reports exist for mock interviews only.
+          Guided practice sessions produce coaching feedback in the session
+          itself, so they have no separate report. Reports exist for mock
+          interviews only.
         </p>
       </div>
     </AppShell>

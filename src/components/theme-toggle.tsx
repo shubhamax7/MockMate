@@ -1,3 +1,5 @@
+"use client";
+
 import { Moon, Sun, Monitor } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -23,7 +25,10 @@ export function ThemeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuRadioGroup value={theme} onValueChange={(v) => setTheme(v as typeof theme)}>
+        <DropdownMenuRadioGroup
+          value={theme}
+          onValueChange={(v) => setTheme(v as typeof theme)}
+        >
           <DropdownMenuRadioItem value="light">
             <Sun className="mr-2 size-4" /> Light
           </DropdownMenuRadioItem>

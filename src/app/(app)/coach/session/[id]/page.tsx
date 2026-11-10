@@ -1,4 +1,7 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+"use client";
+
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import {
   ArrowRight,
   BookOpenCheck,
@@ -14,40 +17,27 @@ import { AppShell } from "@/components/layout/app-shell";
 import { DemoLabel } from "@/components/demo-label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { getExercise, listExercises } from "@/lib/repo";
 import { difficultyLabel } from "@/lib/format";
 
-export const Route = createFileRoute("/_app/coach/session/$id")({
-  head: ({ params }) => ({
-    meta: [
-      { title: `Guided practice — MockMate Interview Coach` },
-      {
-        name: "description",
-        content:
-          "Guided coaching session: attempt the question, request hints and explanations, retry and compare attempts.",
-      },
-      { property: "og:title", content: "Guided practice session — MockMate" },
-      {
-        property: "og:description",
-        content: "Attempt, hints, retries and a model answer for focused practice.",
-      },
-      { property: "og:type", content: "website" },
-    ],
-  }),
-  component: CoachSessionPage,
-});
-
 function wordCount(text: string): number {
   return text.trim() ? text.trim().split(/\s+/).length : 0;
 }
 
-function CoachSessionPage() {
-  const { id } = Route.useParams();
-  const navigate = useNavigate();
+export default function CoachSessionPage() {
+  const params = useParams<{ id: string }>();
+  const id = params?.id ?? "";
+  const router = useRouter();
   const exercise = getExercise(id);
 
   const [attempts, setAttempts] = useState<string[]>([]);
@@ -59,7 +49,8 @@ function CoachSessionPage() {
 
   useEffect(() => {
     setFeedbackTiming(
-      window.localStorage.getItem("interview-coach-feedback-timing") ?? "after-attempt",
+      window.localStorage.getItem("interview-coach-feedback-timing") ??
+        "after-attempt",
     );
   }, []);
 
@@ -76,11 +67,11 @@ function CoachSessionPage() {
           <CardContent className="flex flex-col items-center gap-3 py-12 text-center">
             <p className="text-sm font-medium">This exercise doesn't exist</p>
             <p className="max-w-sm text-sm text-muted-foreground">
-              The exercise you're looking for isn't part of this demo. Pick another one from the
-              coach.
+              The exercise you're looking for isn't part of this demo. Pick
+              another one from the coach.
             </p>
             <Button asChild>
-              <Link to="/coach">Back to the coach</Link>
+              <Link href="/coach">Back to the coach</Link>
             </Button>
           </CardContent>
         </Card>
@@ -94,8 +85,6 @@ function CoachSessionPage() {
     setDraft("");
     setShowModelAnswer(true);
   };
-
-  const canRetry = attempts.length > 0;
 
   return (
     <AppShell
@@ -134,7 +123,9 @@ function CoachSessionPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">
-                  {attempts.length === 0 ? "Your answer" : `Attempt ${attempts.length + 1}`}
+                  {attempts.length === 0
+                    ? "Your answer"
+                    : `Attempt ${attempts.length + 1}`}
                 </CardTitle>
                 <CardDescription>
                   {attempts.length === 0
@@ -169,7 +160,9 @@ function CoachSessionPage() {
                     </Button>
                     <Button onClick={submitAttempt} disabled={!draft.trim()}>
                       <Check className="size-4" />
-                      {attempts.length === 0 ? "Submit attempt" : "Submit revised answer"}
+                      {attempts.length === 0
+                        ? "Submit attempt"
+                        : "Submit revised answer"}
                     </Button>
                   </div>
                 </div>
@@ -181,26 +174,35 @@ function CoachSessionPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base flex items-center gap-2">
-                    <Repeat className="size-4 text-primary" aria-hidden /> Attempt comparison
+                    <Repeat className="size-4 text-primary" aria-hidden />{" "}
+                    Attempt comparison
                   </CardTitle>
                   <CardDescription>
-                    Observable differences between your attempts — length, structure and word
-                    choice. This comparison is mechanical, not a judgment.
+                    Observable differences between your attempts — length,
+                    structure and word choice. This comparison is mechanical,
+                    not a judgment.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {attempts.map((attempt, index) => (
-                    <div key={index} className="rounded-lg border border-border bg-background p-3">
+                    <div
+                      key={index}
+                      className="rounded-lg border border-border bg-background p-3"
+                    >
                       <p className="text-xs font-medium text-muted-foreground">
                         Attempt {index + 1} · {wordCount(attempt)} words
                       </p>
-                      <p className="mt-1.5 text-sm leading-relaxed">{attempt}</p>
+                      <p className="mt-1.5 text-sm leading-relaxed">
+                        {attempt}
+                      </p>
                     </div>
                   ))}
                   {attempts.length >= 2 &&
                     (() => {
                       const firstCount = wordCount(attempts[0] ?? "");
-                      const latestCount = wordCount(attempts[attempts.length - 1] ?? "");
+                      const latestCount = wordCount(
+                        attempts[attempts.length - 1] ?? "",
+                      );
                       return (
                         <p className="text-sm text-muted-foreground">
                           {latestCount > firstCount
@@ -220,18 +222,26 @@ function CoachSessionPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="text-base flex items-center gap-2">
-                    <BookOpenCheck className="size-4 text-primary" aria-hidden /> Model answer
+                    <BookOpenCheck
+                      className="size-4 text-primary"
+                      aria-hidden
+                    />{" "}
+                    Model answer
                   </CardTitle>
                   <CardDescription>
-                    One strong way to answer this — compare it with your attempts, don't memorise
-                    it.
+                    One strong way to answer this — compare it with your
+                    attempts, don't memorise it.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm leading-relaxed">{exercise.modelAnswer}</p>
+                  <p className="text-sm leading-relaxed">
+                    {exercise.modelAnswer}
+                  </p>
                   <Separator className="my-4" />
                   <p className="text-sm leading-relaxed text-muted-foreground">
-                    <span className="font-medium text-foreground">Why this works: </span>
+                    <span className="font-medium text-foreground">
+                      Why this works:{" "}
+                    </span>
                     {exercise.explanation}
                   </p>
                 </CardContent>
@@ -239,11 +249,16 @@ function CoachSessionPage() {
             ) : (
               <Card className="border-dashed">
                 <CardContent className="py-8 text-center">
-                  <Eye className="mx-auto size-5 text-muted-foreground" aria-hidden />
-                  <p className="mt-2 text-sm font-medium">Model answer locked</p>
+                  <Eye
+                    className="mx-auto size-5 text-muted-foreground"
+                    aria-hidden
+                  />
+                  <p className="mt-2 text-sm font-medium">
+                    Model answer locked
+                  </p>
                   <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
-                    You'll see a model answer after you submit your first attempt — struggling first
-                    is what makes it stick.
+                    You'll see a model answer after you submit your first
+                    attempt — struggling first is what makes it stick.
                   </p>
                 </CardContent>
               </Card>
@@ -255,23 +270,27 @@ function CoachSessionPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-base flex items-center gap-2">
-                  <Lightbulb className="size-4 text-primary" aria-hidden /> Hints
+                  <Lightbulb className="size-4 text-primary" aria-hidden />{" "}
+                  Hints
                 </CardTitle>
                 <CardDescription>
                   Request hints one level at a time. Level{" "}
-                  {Math.min(hintLevel + 1, exercise.hints.length)} of {exercise.hints.length}{" "}
-                  available.
+                  {Math.min(hintLevel + 1, exercise.hints.length)} of{" "}
+                  {exercise.hints.length} available.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {hintLevel === 0 && (
                   <p className="text-sm text-muted-foreground">
-                    No hints shown yet. Try the question on your own first — one rough attempt is
-                    enough.
+                    No hints shown yet. Try the question on your own first — one
+                    rough attempt is enough.
                   </p>
                 )}
                 {exercise.hints.slice(0, hintLevel).map((hint, index) => (
-                  <div key={index} className="rounded-lg border border-border bg-secondary/60 p-3">
+                  <div
+                    key={index}
+                    className="rounded-lg border border-border bg-secondary/60 p-3"
+                  >
                     <p className="text-xs font-medium text-secondary-foreground">
                       Hint level {index + 1}
                     </p>
@@ -292,13 +311,21 @@ function CoachSessionPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-base flex items-center gap-2">
-                  <MessageSquareText className="size-4 text-primary" aria-hidden /> Explanation
+                  <MessageSquareText
+                    className="size-4 text-primary"
+                    aria-hidden
+                  />{" "}
+                  Explanation
                 </CardTitle>
-                <CardDescription>A full walkthrough of the underlying concept.</CardDescription>
+                <CardDescription>
+                  A full walkthrough of the underlying concept.
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 {showExplanation ? (
-                  <p className="text-sm leading-relaxed">{exercise.explanation}</p>
+                  <p className="text-sm leading-relaxed">
+                    {exercise.explanation}
+                  </p>
                 ) : (
                   <Button
                     variant="outline"
@@ -327,31 +354,34 @@ function CoachSessionPage() {
                   </span>
                 </p>
                 <p className="mt-1 text-xs">
-                  Change this in Settings — it controls when hints and explanations become available
-                  during guided sessions.
+                  Change this in Settings — it controls when hints and
+                  explanations become available during guided sessions.
                 </p>
               </CardContent>
             </Card>
 
             <div className="flex flex-wrap gap-2">
               <Button variant="secondary" className="flex-1" asChild>
-                <Link to="/coach/session/$id" params={{ id: nextExercise?.id ?? exercise.id }}>
+                <Link
+                  href={`/coach/session/${nextExercise?.id ?? exercise.id}`}
+                >
                   Next exercise <ArrowRight className="size-4" />
                 </Link>
               </Button>
               <Button variant="outline" asChild>
-                <Link to="/coach">All exercises</Link>
+                <Link href="/coach">All exercises</Link>
               </Button>
             </div>
           </div>
         </div>
 
         <p className="text-xs text-muted-foreground">
-          This session is a demonstration: the coach's feedback is scripted sample content, and{" "}
+          This session is a demonstration: the coach's feedback is scripted
+          sample content, and{" "}
           <button
             type="button"
             className="text-primary underline-offset-2 hover:underline"
-            onClick={() => navigate({ to: "/coach" })}
+            onClick={() => router.push("/coach")}
           >
             other exercises
           </button>{" "}
