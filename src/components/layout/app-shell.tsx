@@ -1,4 +1,7 @@
-import { Link, Outlet, useMatchRoute } from "@tanstack/react-router";
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   CalendarClock,
   History,
@@ -16,7 +19,13 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { LogoMark } from "@/components/mockmate-logo";
 import { DEMO_USER } from "@/data/fixtures";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -35,29 +44,36 @@ function SidebarNav({
   collapsed?: boolean;
   onNavigate?: () => void;
 }) {
-  const matchRoute = useMatchRoute();
+  const pathname = usePathname();
   return (
     <nav aria-label="Primary" className="flex flex-col gap-1">
       {navItems.map((item) => {
-        const active = !!matchRoute({ to: item.to, fuzzy: true });
+        const active =
+          item.to === "/dashboard"
+            ? pathname === "/dashboard"
+            : pathname.startsWith(item.to);
         const Icon = item.icon;
         return (
           <Link
             key={item.to}
-            to={item.to}
-            onClick={onNavigate}
-            aria-current={active ? "page" : undefined}
-            title={collapsed ? item.label : undefined}
+            href={item.to}
+            {...(onNavigate ? { onClick: onNavigate } : {})}
+            {...(active ? { "aria-current": "page" as const } : {})}
+            {...(collapsed ? { title: item.label } : {})}
             className={cn(
               "flex min-w-0 items-center rounded-lg text-sm font-medium transition-colors",
-              collapsed ? "size-9 shrink-0 justify-center self-center p-0" : "gap-3 px-3 py-2",
+              collapsed
+                ? "size-9 shrink-0 justify-center self-center p-0"
+                : "gap-3 px-3 py-2",
               active
                 ? "bg-sidebar-accent text-sidebar-accent-foreground"
                 : "text-muted-foreground hover:bg-accent hover:text-foreground",
             )}
           >
             <Icon className="size-4 shrink-0" aria-hidden />
-            <span className={cn(collapsed ? "sr-only" : "min-w-0 truncate")}>{item.label}</span>
+            <span className={cn(collapsed ? "sr-only" : "min-w-0 truncate")}>
+              {item.label}
+            </span>
           </Link>
         );
       })}
@@ -68,9 +84,12 @@ function SidebarNav({
 function SidebarFooter() {
   return (
     <div className="mt-auto rounded-lg border border-sidebar-border bg-secondary p-3">
-      <p className="text-xs font-medium text-secondary-foreground">Demo workspace</p>
+      <p className="text-xs font-medium text-secondary-foreground">
+        Demo workspace
+      </p>
       <p className="mt-1 text-xs text-muted-foreground">
-        Signed in as {DEMO_USER.name}. All data in this build is demonstration data.
+        Signed in as {DEMO_USER.name}. All data in this build is demonstration
+        data.
       </p>
     </div>
   );
@@ -106,14 +125,19 @@ export function AppShell({
         <div
           className={cn(
             "flex items-center",
-            collapsed ? "flex-col justify-center gap-2" : "justify-between px-1",
+            collapsed
+              ? "flex-col justify-center gap-2"
+              : "justify-between px-1",
           )}
         >
-          <Link to="/dashboard" aria-label="MockMate home">
+          <Link href="/dashboard" aria-label="MockMate home">
             <LogoMark className={collapsed ? "size-9" : "size-7"} />
           </Link>
           {!collapsed && (
-            <Link to="/dashboard" className="min-w-0 truncate text-sm font-semibold tracking-tight">
+            <Link
+              href="/dashboard"
+              className="min-w-0 truncate text-sm font-semibold tracking-tight"
+            >
               MockMate
             </Link>
           )}
@@ -124,7 +148,11 @@ export function AppShell({
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
             onClick={() => setCollapsed((c) => !c)}
           >
-            {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
+            {collapsed ? (
+              <PanelLeftOpen className="size-4" />
+            ) : (
+              <PanelLeftClose className="size-4" />
+            )}
           </Button>
         </div>
         <div className="mt-4 flex min-w-0 flex-1 flex-col overflow-hidden">
@@ -163,7 +191,9 @@ export function AppShell({
                   </div>
                 </SheetContent>
               </Sheet>
-              <h1 className="truncate text-sm font-semibold tracking-tight">{title}</h1>
+              <h1 className="truncate text-sm font-semibold tracking-tight">
+                {title}
+              </h1>
             </div>
             <div className="flex items-center gap-2">
               {actions}
@@ -173,7 +203,9 @@ export function AppShell({
         </header>
         <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:px-6 sm:py-8">
           {description && (
-            <p className="mb-6 max-w-2xl text-sm text-muted-foreground">{description}</p>
+            <p className="mb-6 max-w-2xl text-sm text-muted-foreground">
+              {description}
+            </p>
           )}
           {children}
         </main>
@@ -181,5 +213,3 @@ export function AppShell({
     </div>
   );
 }
-
-export { Outlet as AppShellOutlet };

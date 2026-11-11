@@ -1,62 +1,69 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ArrowUpRight, CalendarClock, Mic, Sparkles } from "lucide-react";
+"use client";
+
+import Link from "next/link";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  CalendarClock,
+  Mic,
+  Sparkles,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { AppShell } from "@/components/layout/app-shell";
 import { DemoLabel } from "@/components/demo-label";
 import { ProgressChart } from "@/components/charts/progress-chart";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { PROGRESS_SERIES, PRACTISED_SKILLS, SAMPLE_REPORT } from "@/data/fixtures";
+import {
+  PROGRESS_SERIES,
+  PRACTISED_SKILLS,
+  SAMPLE_REPORT,
+} from "@/data/fixtures";
 import { listInterviews } from "@/lib/repo";
 import { formatDate, modeLabel, roleLabel } from "@/lib/format";
 import type { InterviewSummary } from "@/types";
 
-export const Route = createFileRoute("/_app/dashboard")({
-  head: () => ({
-    meta: [
-      { title: "Dashboard — MockMate Interview Coach" },
-      {
-        name: "description",
-        content:
-          "Your practice overview: recent interviews, latest evidence-based report summary and recommended next drills.",
-      },
-      { property: "og:title", content: "Dashboard — MockMate Interview Coach" },
-      {
-        property: "og:description",
-        content: "Recent interviews, latest report summary and recommended practice.",
-      },
-      { property: "og:type", content: "website" },
-    ],
-  }),
-  component: DashboardPage,
-});
-
 function StatusBadge({ interview }: { interview: InterviewSummary }) {
   if (interview.status === "completed") {
     return (
-      <Badge variant="outline" className="border-border bg-secondary text-secondary-foreground">
+      <Badge
+        variant="outline"
+        className="border-border bg-secondary text-secondary-foreground"
+      >
         {interview.reportAvailable ? "Report ready" : "Completed"}
       </Badge>
     );
   }
   if (interview.status === "in_progress") {
     return (
-      <Badge variant="outline" className="border-border bg-secondary text-secondary-foreground">
+      <Badge
+        variant="outline"
+        className="border-border bg-secondary text-secondary-foreground"
+      >
         In progress
       </Badge>
     );
   }
   return (
-    <Badge variant="outline" className="border-border bg-secondary text-secondary-foreground">
+    <Badge
+      variant="outline"
+      className="border-border bg-secondary text-secondary-foreground"
+    >
       Draft
     </Badge>
   );
 }
 
-function DashboardPage() {
+export default function DashboardPage() {
   const [interviews, setInterviews] = useState<InterviewSummary[]>([]);
 
   // Load after hydration so locally created demo sessions appear without an
@@ -80,22 +87,25 @@ function DashboardPage() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <div className="flex items-center gap-3">
-                <h2 className="text-xl font-semibold tracking-tight">Good to see you, Demo user</h2>
+                <h2 className="text-xl font-semibold tracking-tight">
+                  Good to see you, Demo user
+                </h2>
                 <DemoLabel />
               </div>
               <p className="mt-1 text-sm text-muted-foreground">
-                Your last mock interview was on {formatDate("2026-10-24T10:12:00Z")} — System design
-                and Databases.
+                Your last mock interview was on{" "}
+                {formatDate("2026-10-24T10:12:00Z")} — System design and
+                Databases.
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
               <Button asChild>
-                <Link to="/interview/new">
+                <Link href="/interview/new">
                   <Mic className="size-4" /> Start mock interview
                 </Link>
               </Button>
               <Button variant="secondary" asChild>
-                <Link to="/coach">
+                <Link href="/coach">
                   <Sparkles className="size-4" /> Continue practising
                 </Link>
               </Button>
@@ -109,15 +119,16 @@ function DashboardPage() {
             <CardHeader>
               <CardTitle className="text-base">Progress over time</CardTitle>
               <CardDescription>
-                Technical and communication assessments across your last six sessions. Small samples
-                — treat trends as indications, not verdicts.
+                Technical and communication assessments across your last six
+                sessions. Small samples — treat trends as indications, not
+                verdicts.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <ProgressChart data={PROGRESS_SERIES} />
               <p className="mt-3 text-xs text-muted-foreground">
-                Only compatible sessions (same role and difficulty band) are compared. Demo series
-                with six data points.
+                Only compatible sessions (same role and difficulty band) are
+                compared. Demo series with six data points.
               </p>
             </CardContent>
           </Card>
@@ -137,35 +148,44 @@ function DashboardPage() {
                 <div className="rounded-lg border border-border bg-secondary/50 p-3">
                   <p className="text-xs text-muted-foreground">Technical</p>
                   <p className="mt-1 text-2xl font-semibold tabular-nums">72</p>
-                  <p className="text-[11px] text-muted-foreground">Medium confidence</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    Medium confidence
+                  </p>
                 </div>
                 <div className="rounded-lg border border-border bg-secondary/50 p-3">
                   <p className="text-xs text-muted-foreground">Communication</p>
                   <p className="mt-1 text-2xl font-semibold tabular-nums">64</p>
-                  <p className="text-[11px] text-muted-foreground">Medium confidence</p>
+                  <p className="text-[11px] text-muted-foreground">
+                    Medium confidence
+                  </p>
                 </div>
               </div>
               <div className="space-y-2 text-sm">
                 <p className="flex items-start gap-2">
-                  <ArrowUpRight className="mt-0.5 size-4 shrink-0 text-success" aria-hidden />
+                  <ArrowUpRight
+                    className="mt-0.5 size-4 shrink-0 text-success"
+                    aria-hidden
+                  />
                   <span>
-                    <span className="font-medium">Strength:</span> structured, summary-first
-                    answers.
+                    <span className="font-medium">Strength:</span> structured,
+                    summary-first answers.
                   </span>
                 </p>
                 <p className="flex items-start gap-2">
-                  <ArrowUpRight className="mt-0.5 size-4 shrink-0 text-warning" aria-hidden />
+                  <ArrowUpRight
+                    className="mt-0.5 size-4 shrink-0 text-warning"
+                    aria-hidden
+                  />
                   <span>
-                    <span className="font-medium">Priority:</span> quantify scaling arguments with
-                    estimates.
+                    <span className="font-medium">Priority:</span> quantify
+                    scaling arguments with estimates.
                   </span>
                 </p>
               </div>
               <Separator />
               <Button variant="outline" className="w-full" asChild>
                 <Link
-                  to="/interview/report/$id"
-                  params={{ id: latestWithReport?.id ?? "demo-1" }}
+                  href={`/interview/report/${latestWithReport?.id ?? "demo-1"}`}
                 >
                   Open full report <ArrowRight className="size-4" />
                 </Link>
@@ -178,8 +198,12 @@ function DashboardPage() {
           {/* Recent activity */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Recent interview activity</CardTitle>
-              <CardDescription>Your last sessions, newest first.</CardDescription>
+              <CardTitle className="text-base">
+                Recent interview activity
+              </CardTitle>
+              <CardDescription>
+                Your last sessions, newest first.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <ul className="divide-y divide-border">
@@ -190,23 +214,25 @@ function DashboardPage() {
                   >
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium">
-                        {modeLabel(interview.mode)} · {roleLabel(interview.role)}
+                        {modeLabel(interview.mode)} ·{" "}
+                        {roleLabel(interview.role)}
                       </p>
                       <p className="mt-0.5 text-xs text-muted-foreground">
-                        {formatDate(interview.createdAt)} · {interview.domains.join(", ")} ·{" "}
+                        {formatDate(interview.createdAt)} ·{" "}
+                        {interview.domains.join(", ")} ·{" "}
                         {interview.durationMinutes} min
                       </p>
                     </div>
                     <StatusBadge interview={interview} />
                     {interview.reportAvailable ? (
                       <Button variant="ghost" size="sm" asChild>
-                        <Link to="/interview/report/$id" params={{ id: interview.id }}>
+                        <Link href={`/interview/report/${interview.id}`}>
                           View report
                         </Link>
                       </Button>
                     ) : (
                       <Button variant="ghost" size="sm" asChild>
-                        <Link to="/coach">Practise instead</Link>
+                        <Link href="/coach">Practise instead</Link>
                       </Button>
                     )}
                   </li>
@@ -214,7 +240,7 @@ function DashboardPage() {
               </ul>
               <Separator className="my-4" />
               <Button variant="ghost" size="sm" asChild>
-                <Link to="/history">
+                <Link href="/history">
                   View all history <ArrowRight className="size-4" />
                 </Link>
               </Button>
@@ -225,25 +251,33 @@ function DashboardPage() {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Recommended practice</CardTitle>
-                <CardDescription>From your latest report's improvement priorities.</CardDescription>
+                <CardTitle className="text-base">
+                  Recommended practice
+                </CardTitle>
+                <CardDescription>
+                  From your latest report's improvement priorities.
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {SAMPLE_REPORT.practicePlan.map((action) => (
                   <Link
                     key={action.title}
-                    to={action.href}
+                    href={action.href}
                     className="block rounded-lg border border-border bg-background p-3 transition-colors hover:bg-accent"
                   >
                     <p className="text-sm font-medium">{action.title}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">{action.description}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {action.description}
+                    </p>
                   </Link>
                 ))}
               </CardContent>
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Recently practised skills</CardTitle>
+                <CardTitle className="text-base">
+                  Recently practised skills
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2.5">

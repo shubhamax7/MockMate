@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import Link from "next/link";
 
 import { Wordmark } from "@/components/layout/site-header";
 
@@ -16,7 +16,7 @@ const columns = [
     title: "Preparation",
     links: [
       { label: "Interview history", href: "/history" },
-      { label: "Sample report", href: "/interview/report/$id" },
+      { label: "Sample report", href: "/interview/report/demo-1" },
       { label: "Settings", href: "/settings" },
     ],
   },
@@ -38,8 +38,8 @@ export function SiteFooter() {
           <div className="max-w-xs">
             <Wordmark />
             <p className="mt-3 text-sm text-muted-foreground">
-              Realistic technical interviews and guided practice, with feedback grounded in what you
-              actually said.
+              Realistic technical interviews and guided practice, with feedback
+              grounded in what you actually said.
             </p>
             <p className="mt-3 text-xs text-muted-foreground">
               Demonstration build — all data shown is sample data.
@@ -51,22 +51,12 @@ export function SiteFooter() {
               <ul className="mt-3 space-y-2">
                 {column.links.map((link) => (
                   <li key={link.label}>
-                    {link.href === "/interview/report/$id" ? (
-                      <Link
-                        to="/interview/report/$id"
-                        params={{ id: "demo-1" }}
-                        className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                      >
-                        {link.label}
-                      </Link>
-                    ) : (
-                      <Link
-                        to={link.href}
-                        className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                      >
-                        {link.label}
-                      </Link>
-                    )}
+                    <Link
+                      href={link.href}
+                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      {link.label}
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -74,7 +64,10 @@ export function SiteFooter() {
           ))}
         </div>
         <div className="mt-10 flex flex-col gap-2 border-t border-border pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <p>© 2026 MockMate Interview Coach. Practice feedback only — not a hiring prediction.</p>
+          <p>
+            © 2026 MockMate Interview Coach. Practice feedback only — not a
+            hiring prediction.
+          </p>
           <p>Built for B.Tech CSE students and early-career engineers.</p>
         </div>
       </div>

@@ -4,7 +4,12 @@ import {
   MOCK_INTERVIEW_SCRIPT,
   SAMPLE_REPORT,
 } from "@/data/fixtures";
-import type { CoachExercise, InterviewConfig, InterviewSummary, Report } from "@/types";
+import type {
+  CoachExercise,
+  InterviewConfig,
+  InterviewSummary,
+  Report,
+} from "@/types";
 
 /**
  * Demo data layer.
@@ -63,7 +68,10 @@ export function createSession(config: InterviewConfig): StoredSession {
     demo: true,
   };
   const session: StoredSession = { summary, config };
-  const all = [session, ...readLocalSessions().filter((s) => s.summary.id !== id)];
+  const all = [
+    session,
+    ...readLocalSessions().filter((s) => s.summary.id !== id),
+  ];
   writeLocalSessions(all);
   saveLastConfig(config);
   return session;
@@ -82,7 +90,10 @@ export function getSession(id: string): StoredSession | undefined {
   return undefined;
 }
 
-export function updateSessionStatus(id: string, status: InterviewSummary["status"]) {
+export function updateSessionStatus(
+  id: string,
+  status: InterviewSummary["status"],
+) {
   const all = readLocalSessions();
   const found = all.find((s) => s.summary.id === id);
   if (!found) return;
@@ -102,8 +113,13 @@ export function markReportAvailable(id: string) {
 export function listInterviews(): InterviewSummary[] {
   const local = readLocalSessions().map((s) => s.summary);
   const fixtureIds = new Set(DEMO_INTERVIEWS.map((d) => d.id));
-  const merged = [...local, ...DEMO_INTERVIEWS.filter((d) => !fixtureIds.has(d.id))];
-  return merged.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const merged = [
+    ...local,
+    ...DEMO_INTERVIEWS.filter((d) => !fixtureIds.has(d.id)),
+  ];
+  return merged.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
 }
 
 export function getReport(sessionId: string): Report | undefined {
@@ -120,7 +136,9 @@ export function getReport(sessionId: string): Report | undefined {
     mode: config?.mode ?? SAMPLE_REPORT.mode,
     role: config?.role ?? SAMPLE_REPORT.role,
     domainSummary: config?.domains?.join(" · ") ?? SAMPLE_REPORT.domainSummary,
-    durationLabel: config ? `${config.durationMinutes} min` : SAMPLE_REPORT.durationLabel,
+    durationLabel: config
+      ? `${config.durationMinutes} min`
+      : SAMPLE_REPORT.durationLabel,
   };
 }
 
@@ -160,7 +178,10 @@ export function defaultConfig(mode: "mock" | "guided"): InterviewConfig {
     mode,
     role: "sde",
     seniority: "fresher",
-    domains: mode === "guided" ? ["Data structures"] : ["Data structures", "Algorithms"],
+    domains:
+      mode === "guided"
+        ? ["Data structures"]
+        : ["Data structures", "Algorithms"],
     difficulty: "intermediate",
     language: "English",
     durationMinutes: 30,

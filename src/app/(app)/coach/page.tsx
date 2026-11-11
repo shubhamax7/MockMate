@@ -1,4 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+"use client";
+
+import Link from "next/link";
 import { ArrowRight, BookOpenCheck, Lightbulb, Repeat } from "lucide-react";
 import { useState } from "react";
 
@@ -23,27 +25,7 @@ import {
 import { listExercises } from "@/lib/repo";
 import { difficultyLabel } from "@/lib/format";
 
-export const Route = createFileRoute("/_app/coach/")({
-  head: () => ({
-    meta: [
-      { title: "Guided practice coach — MockMate Interview Coach" },
-      {
-        name: "description",
-        content:
-          "Skill-focused practice with hints, explanations, retries and model answers — shown only after you attempt.",
-      },
-      { property: "og:title", content: "Guided practice coach — MockMate" },
-      {
-        property: "og:description",
-        content: "Hints, explanations, retries and model answers for focused skills practice.",
-      },
-      { property: "og:type", content: "website" },
-    ],
-  }),
-  component: CoachPage,
-});
-
-function CoachPage() {
+export default function CoachPage() {
   const exercises = listExercises();
   const [hintLevel, setHintLevel] = useState("level-1");
 
@@ -59,7 +41,9 @@ function CoachPage() {
             <DemoLabel />
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground">Default hint level</span>
+            <span className="text-sm text-muted-foreground">
+              Default hint level
+            </span>
             <Select value={hintLevel} onValueChange={setHintLevel}>
               <SelectTrigger className="w-40" aria-label="Default hint level">
                 <SelectValue />
@@ -89,23 +73,26 @@ function CoachPage() {
                   </span>
                 </div>
                 <CardTitle className="text-base">{exercise.title}</CardTitle>
-                <CardDescription className="line-clamp-2">{exercise.question}</CardDescription>
+                <CardDescription className="line-clamp-2">
+                  {exercise.question}
+                </CardDescription>
               </CardHeader>
               <CardContent className="mt-auto">
                 <div className="mb-3 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1.5">
-                    <Lightbulb className="size-3.5" aria-hidden /> {exercise.hints.length} hint
-                    levels
+                    <Lightbulb className="size-3.5" aria-hidden />{" "}
+                    {exercise.hints.length} hint levels
                   </span>
                   <span className="flex items-center gap-1.5">
                     <Repeat className="size-3.5" aria-hidden /> Retry & compare
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <BookOpenCheck className="size-3.5" aria-hidden /> Model answer
+                    <BookOpenCheck className="size-3.5" aria-hidden /> Model
+                    answer
                   </span>
                 </div>
                 <Button asChild className="w-full">
-                  <Link to="/coach/session/$id" params={{ id: exercise.id }}>
+                  <Link href={`/coach/session/${exercise.id}`}>
                     Start practice <ArrowRight className="size-4" />
                   </Link>
                 </Button>
@@ -121,13 +108,16 @@ function CoachPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="text-sm leading-relaxed text-muted-foreground">
-            Here you can ask for hints, see explanations, rewrite and retry answers, and compare
-            attempts — the coach stays on your side. In a{" "}
-            <Link to="/interview/new" className="text-primary hover:underline">
+            Here you can ask for hints, see explanations, rewrite and retry
+            answers, and compare attempts — the coach stays on your side. In a{" "}
+            <Link
+              href="/interview/new"
+              className="text-primary hover:underline"
+            >
               mock interview
             </Link>
-            , none of that appears while the session runs: it is assessment conditions, and all
-            feedback waits until the report.
+            , none of that appears while the session runs: it is assessment
+            conditions, and all feedback waits until the report.
           </CardContent>
         </Card>
       </div>

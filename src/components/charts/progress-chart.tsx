@@ -1,3 +1,5 @@
+"use client";
+
 import {
   CartesianGrid,
   Legend,
@@ -20,7 +22,13 @@ const tooltipStyle = {
 };
 
 /** Theme-aware line chart for longitudinal progress (restrained teal series). */
-export function ProgressChart({ data, height = 260 }: { data: ProgressPoint[]; height?: number }) {
+export function ProgressChart({
+  data,
+  height = 260,
+}: {
+  data: ProgressPoint[];
+  height?: number;
+}) {
   return (
     <div
       role="img"
@@ -28,7 +36,10 @@ export function ProgressChart({ data, height = 260 }: { data: ProgressPoint[]; h
       style={{ width: "100%", height }}
     >
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 8, right: 12, bottom: 0, left: -18 }}>
+        <LineChart
+          data={data}
+          margin={{ top: 8, right: 12, bottom: 0, left: -18 }}
+        >
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
           <XAxis
             dataKey="label"
@@ -40,9 +51,15 @@ export function ProgressChart({ data, height = 260 }: { data: ProgressPoint[]; h
             tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }}
             stroke="var(--color-border)"
           />
-          <Tooltip contentStyle={tooltipStyle} cursor={{ stroke: "var(--color-border)" }} />
+          <Tooltip
+            contentStyle={tooltipStyle}
+            cursor={{ stroke: "var(--color-border)" }}
+          />
           <Legend
-            wrapperStyle={{ fontSize: 12, color: "var(--color-muted-foreground)" }}
+            wrapperStyle={{
+              fontSize: 12,
+              color: "var(--color-muted-foreground)",
+            }}
             iconType="plainline"
           />
           <Line

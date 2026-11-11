@@ -1,4 +1,7 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+"use client";
+
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import {
   AlertTriangle,
   ArrowRight,
@@ -10,7 +13,6 @@ import {
   Play,
   ShieldCheck,
   Square,
-  Volume2,
   XCircle,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -19,33 +21,36 @@ import { DemoLabel } from "@/components/demo-label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { getSession } from "@/lib/repo";
+import { DEMO_INTERVIEWS } from "@/data/fixtures";
+import { getSession, type StoredSession } from "@/lib/repo";
 import { difficultyLabel, modeLabel, roleLabel } from "@/lib/format";
 
-export const Route = createFileRoute("/interview/lobby/$id")({
-  head: () => ({
-    meta: [
-      { title: "Interview lobby — MockMate Interview Coach" },
-      {
-        name: "description",
-        content: "Verify your microphone and consent status before the interview begins.",
-      },
-      { property: "og:title", content: "Interview lobby — MockMate" },
-      { property: "og:description", content: "Device and readiness checks before you begin." },
-      { property: "og:type", content: "website" },
-    ],
-  }),
-  component: LobbyPage,
-});
+type MicState =
+  "untested" | "testing" | "granted" | "denied" | "unavailable" | "simulated";
 
-type MicState = "untested" | "testing" | "granted" | "denied" | "unavailable" | "simulated";
+export default function LobbyPage() {
+  const params = useParams<{ id: string }>();
+  const id = params?.id ?? "";
+  const router = useRouter();
+  const [session, setSession] = useState<StoredSession | undefined>(() => {
+    return DEMO_INTERVIEWS.some((d) => d.id === id)
+      ? getSession(id)
+      : undefined;
+  });
+  const [mounted, setMounted] = useState(false);
 
-function LobbyPage() {
-  const { id } = Route.useParams();
-  const navigate = useNavigate();
-  const session = getSession(id);
+  useEffect(() => {
+    setMounted(true);
+    setSession(getSession(id));
+  }, [id]);
 
   const [micState, setMicState] = useState<MicState>("untested");
   const [micMessage, setMicMessage] = useState<string | null>(null);
@@ -71,22 +76,31 @@ function LobbyPage() {
 
   useEffect(() => stopEverything, []);
 
+  if (!mounted && !session) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <p className="text-sm text-muted-foreground">Loading session…</p>
+      </div>
+    );
+  }
+
   if (!session) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <Card className="max-w-md">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <CircleAlert className="size-5 text-warning" aria-hidden /> Interview not found
+              <CircleAlert className="size-5 text-warning" aria-hidden />{" "}
+              Interview not found
             </CardTitle>
             <CardDescription>
-              This lobby's session ID doesn't exist in this demo. Sessions are created locally when
-              you finish the setup wizard.
+              This lobby&apos;s session ID doesn&apos;t exist in this demo.
+              Sessions are created locally when you finish the setup wizard.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Button asChild>
-              <Link to="/interview/new">Set up a new interview</Link>
+              <Link href="/interview/new">Set up a new interview</Link>
             </Button>
           </CardContent>
         </Card>
@@ -110,7 +124,9 @@ function LobbyPage() {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
       setMicState("granted");
-      setMicMessage("Microphone access granted — input level is shown live below.");
+      setMicMessage(
+        "Microphone access granted — input level is shown live below.",
+      );
 
       // Device labels only become available once permission is granted.
       try {
@@ -145,7 +161,9 @@ function LobbyPage() {
       try {
         await ctx.resume();
         // Short sample of the captured input through the output, if allowed.
-        setTestNote("Say a few words — the meter below should move while you speak.");
+        setTestNote(
+          "Say a few words — the meter below should move while you speak.",
+        );
       } catch {
         setTestNote(null);
       }
@@ -173,7 +191,8 @@ function LobbyPage() {
     );
   };
 
-  const consentOk = config.consents.ageConfirmed && config.consents.processAudio;
+  const consentOk =
+    config.consents.ageConfirmed && config.consents.processAudio;
   const micOk = micState === "granted" || micState === "simulated";
   const canBegin = consentOk && micOk;
 
@@ -181,7 +200,9 @@ function LobbyPage() {
     {
       label: "Consent confirmed (18+, audio processing)",
       ok: consentOk,
-      detail: consentOk ? "Recorded in the setup wizard." : "Return to the wizard to give consent.",
+      detail: consentOk
+        ? "Recorded in the setup wizard."
+        : "Return to the wizard to give consent.",
     },
     {
       label:
@@ -205,7 +226,8 @@ function LobbyPage() {
     {
       label: "Simulated interviewer ready (demo)",
       ok: true,
-      detail: "Questions come from a scripted demo bank — no live AI is connected.",
+      detail:
+        "Questions come from a scripted demo bank — no live AI is connected.",
     },
   ];
 
@@ -214,7 +236,7 @@ function LobbyPage() {
       <header className="border-b border-border print-hide">
         <div className="mx-auto flex h-14 max-w-4xl items-center justify-between px-4 sm:px-6">
           <Button variant="ghost" size="sm" asChild>
-            <Link to="/interview/new">
+            <Link href="/interview/new">
               <ArrowRight className="size-4 rotate-180" /> Back to setup
             </Link>
           </Button>
@@ -230,10 +252,13 @@ function LobbyPage() {
           {/* Left: mic setup */}
           <div className="space-y-6">
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight">Check your setup</h1>
+              <h1 className="text-2xl font-semibold tracking-tight">
+                Check your setup
+              </h1>
               <p className="mt-2 text-sm text-muted-foreground">
-                Two things must pass before the interview begins: consent and a microphone check.
-                Nothing here pretends to be ready when it isn't.
+                Two things must pass before the interview begins: consent and a
+                microphone check. Nothing here pretends to be ready when it
+                isn&apos;t.
               </p>
             </div>
 
@@ -253,7 +278,10 @@ function LobbyPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex flex-wrap gap-2">
-                  <Button onClick={startMicTest} disabled={micState === "testing"}>
+                  <Button
+                    onClick={startMicTest}
+                    disabled={micState === "testing"}
+                  >
                     {micState === "testing" ? (
                       "Waiting for permission…"
                     ) : micState === "granted" ? (
@@ -282,7 +310,9 @@ function LobbyPage() {
                 <div>
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <span>{testing ? "Live input level" : "Input level"}</span>
-                    <span className="tabular-nums">{testing ? `${level}%` : "—"}</span>
+                    <span className="tabular-nums">
+                      {testing ? `${level}%` : "—"}
+                    </span>
                   </div>
                   <div
                     role="meter"
@@ -298,14 +328,18 @@ function LobbyPage() {
                     />
                   </div>
                   {testNote && testing && (
-                    <p className="mt-1.5 text-xs text-muted-foreground">{testNote}</p>
+                    <p className="mt-1.5 text-xs text-muted-foreground">
+                      {testNote}
+                    </p>
                   )}
                 </div>
 
                 {micMessage && (
                   <Alert
                     variant={
-                      micState === "granted" || micState === "simulated" ? undefined : "destructive"
+                      micState === "granted" || micState === "simulated"
+                        ? undefined
+                        : "destructive"
                     }
                   >
                     {micState === "granted" ? (
@@ -333,12 +367,13 @@ function LobbyPage() {
                 {/* Devices */}
                 <div>
                   <p className="flex items-center gap-1.5 text-xs font-medium">
-                    <MonitorSpeaker className="size-3.5" aria-hidden /> Audio devices
+                    <MonitorSpeaker className="size-3.5" aria-hidden /> Audio
+                    devices
                   </p>
                   {devices.length === 0 ? (
                     <p className="mt-1 text-xs text-muted-foreground">
-                      Device names appear after granting microphone access (browser security
-                      policy).
+                      Device names appear after granting microphone access
+                      (browser security policy).
                     </p>
                   ) : (
                     <ul className="mt-1.5 space-y-1">
@@ -351,7 +386,8 @@ function LobbyPage() {
                             aria-hidden
                             className={`size-1.5 rounded-full ${device.kind === "audioinput" ? "bg-primary" : "bg-muted-foreground/40"}`}
                           />
-                          {device.kind === "audioinput" ? "Input" : "Output"}: {device.label}
+                          {device.kind === "audioinput" ? "Input" : "Output"}:{" "}
+                          {device.label}
                         </li>
                       ))}
                     </ul>
@@ -367,11 +403,15 @@ function LobbyPage() {
                 <AlertTitle>How to recover</AlertTitle>
                 <AlertDescription>
                   <ol className="list-decimal space-y-1 pl-4">
-                    <li>Click the lock/permissions icon in your browser's address bar.</li>
-                    <li>Set Microphone to "Allow" for this site.</li>
+                    <li>
+                      Click the lock/permissions icon in your browser&apos;s
+                      address bar.
+                    </li>
+                    <li>Set Microphone to &quot;Allow&quot; for this site.</li>
                     <li>Re-run the microphone test above.</li>
                   </ol>
-                  If no device exists at all, use the simulated microphone to explore the demo.
+                  If no device exists at all, use the simulated microphone to
+                  explore the demo.
                 </AlertDescription>
               </Alert>
             )}
@@ -386,13 +426,21 @@ function LobbyPage() {
                   {checklist.map((item) => (
                     <li key={item.label} className="flex items-start gap-2.5">
                       {item.ok ? (
-                        <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" aria-hidden />
+                        <CheckCircle2
+                          className="mt-0.5 size-4 shrink-0 text-success"
+                          aria-hidden
+                        />
                       ) : (
-                        <XCircle className="mt-0.5 size-4 shrink-0 text-destructive" aria-hidden />
+                        <XCircle
+                          className="mt-0.5 size-4 shrink-0 text-destructive"
+                          aria-hidden
+                        />
                       )}
                       <div>
                         <p className="text-sm font-medium">{item.label}</p>
-                        <p className="text-xs text-muted-foreground">{item.detail}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {item.detail}
+                        </p>
                       </div>
                     </li>
                   ))}
@@ -439,7 +487,10 @@ function LobbyPage() {
                 </dl>
                 <Separator />
                 <div className="flex items-start gap-2 text-xs text-muted-foreground">
-                  <ShieldCheck className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden />
+                  <ShieldCheck
+                    className="mt-0.5 size-3.5 shrink-0 text-primary"
+                    aria-hidden
+                  />
                   <span>
                     Audio consent {consentOk ? "recorded" : "missing"}.{" "}
                     {config.consents.retainAudio
@@ -454,15 +505,15 @@ function LobbyPage() {
               <CardContent className="space-y-3 pt-6">
                 <p className="flex items-start gap-2 text-xs text-muted-foreground">
                   <MicOff className="mt-0.5 size-3.5 shrink-0" aria-hidden />
-                  During the interview you can mute and unmute yourself, toggle captions and end
-                  early with confirmation.
+                  During the interview you can mute and unmute yourself, toggle
+                  captions and end early with confirmation.
                 </p>
                 <Button
                   className="w-full"
                   size="lg"
                   disabled={!canBegin}
                   onClick={() => {
-                    navigate({ to: "/interview/session/$id", params: { id: summary.id } });
+                    router.push(`/interview/session/${summary.id}`);
                   }}
                 >
                   Begin interview <ArrowRight className="size-4" />

@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -8,9 +8,15 @@ export const PRODUCT_NAME = "MockMate";
 
 export function Wordmark({ className = "" }: { className?: string }) {
   return (
-    <Link to="/" className={`flex items-center gap-2 ${className}`} aria-label="MockMate home">
+    <Link
+      href="/"
+      className={`flex items-center gap-2 ${className}`}
+      aria-label="MockMate home"
+    >
       <LogoLockup className="h-9" />
-      <span className="hidden text-xs text-muted-foreground sm:inline">Interview Coach</span>
+      <span className="hidden text-xs text-muted-foreground sm:inline">
+        Interview Coach
+      </span>
     </Link>
   );
 }
@@ -43,10 +49,10 @@ export function SiteHeader() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <Button variant="ghost" asChild className="hidden sm:inline-flex">
-            <Link to="/dashboard">Dashboard</Link>
+            <Link href="/dashboard">Dashboard</Link>
           </Button>
           <Button asChild>
-            <Link to="/interview/new">Start practising</Link>
+            <Link href="/interview/new">Start practising</Link>
           </Button>
         </div>
       </div>

@@ -132,7 +132,8 @@ export const SAMPLE_REPORT: Report = {
       observedIssue:
         "Scaling answers stayed qualitative — 'it would get slow' — without estimating orders of magnitude.",
       evidence: {
-        quote: "At that point the single table would get slow, so we'd need to shard it somehow.",
+        quote:
+          "At that point the single table would get slow, so we'd need to shard it somehow.",
         timestamp: "14:02",
         source: "Question 3 — Schema design",
         why: "No row counts, QPS or memory figures appear anywhere in the answer, so the trade-off cannot be evaluated.",
@@ -147,7 +148,8 @@ export const SAMPLE_REPORT: Report = {
       observedIssue:
         "Filler words ('like', 'basically', 'you know') clustered when questions turned unfamiliar.",
       evidence: {
-        quote: "So basically, like, the partition, you know, would basically split the data…",
+        quote:
+          "So basically, like, the partition, you know, would basically split the data…",
         timestamp: "19:36",
         source: "Question 4 — Partitioning",
         why: "Seven fillers in 22 seconds appear in the transcript segment; the same segment also shows a 1.5× pace drop.",
@@ -162,7 +164,8 @@ export const SAMPLE_REPORT: Report = {
       observedIssue:
         "Several answers ended mid-detail when the interviewer stopped probing, leaving the conclusion unstated.",
       evidence: {
-        quote: "…and that's why the worker retries, and the queue also has, uh—",
+        quote:
+          "…and that's why the worker retries, and the queue also has, uh—",
         timestamp: "8:55",
         source: "Question 2 — Rate limiting",
         why: "The transcript ends the turn without a wrap-up sentence; the final trade-off you had planned never reached the listener.",
@@ -176,7 +179,8 @@ export const SAMPLE_REPORT: Report = {
   questions: [
     {
       id: "q1",
-      question: "Walk me through how you would design the rate-limiting layer for a public API.",
+      question:
+        "Walk me through how you would design the rate-limiting layer for a public API.",
       responseExcerpt:
         "So in short, I'd pick a queue between the API and the worker — let me walk through why, then the failure modes…",
       expectedConcepts: [
@@ -185,14 +189,18 @@ export const SAMPLE_REPORT: Report = {
         "429 semantics",
       ],
       demonstrated: ["Token bucket naming", "Client identification by key"],
-      missing: ["Where the counters live in a multi-node deployment", "Retry-After header"],
+      missing: [
+        "Where the counters live in a multi-node deployment",
+        "Retry-After header",
+      ],
       evaluatorFeedback:
         "You named a standard algorithm and its purpose clearly. The answer stopped before explaining how counters stay consistent across nodes — the expected follow-up.",
       evidenceRef: "4:12",
     },
     {
       id: "q2",
-      question: "A job queue is processing slowly and retries are piling up. How do you debug it?",
+      question:
+        "A job queue is processing slowly and retries are piling up. How do you debug it?",
       responseExcerpt:
         "First I'd check whether it's the consumers or the queue itself — look at consumer CPU, then queue depth over time…",
       expectedConcepts: [
@@ -208,7 +216,8 @@ export const SAMPLE_REPORT: Report = {
     },
     {
       id: "q3",
-      question: "Design the schema for 'orders' when the hot query is the last N orders per user.",
+      question:
+        "Design the schema for 'orders' when the hot query is the last N orders per user.",
       responseExcerpt:
         "I'd index on user_id plus created_at because the hot query is 'last N orders per user', but writes are heavy so I wouldn't index more than needed.",
       expectedConcepts: [
@@ -330,7 +339,8 @@ export const SAMPLE_REPORT: Report = {
     {
       original: "We are having the indexes on user_id.",
       correction: "We have indexes on user_id.",
-      explanation: "Simple present fits a state description; 'are having' is a common tense slip.",
+      explanation:
+        "Simple present fits a state description; 'are having' is a common tense slip.",
       meaningPreserved: true,
     },
     {
@@ -350,17 +360,20 @@ export const SAMPLE_REPORT: Report = {
   practicePlan: [
     {
       title: "Estimation drill: size a system before designing it",
-      description: "Three guided design questions that force one back-of-envelope estimate each.",
+      description:
+        "Three guided design questions that force one back-of-envelope estimate each.",
       href: "/coach/session/ex-1",
     },
     {
       title: "Summary-last drill for long answers",
-      description: "Practise closing every answer with a one-sentence conclusion.",
+      description:
+        "Practise closing every answer with a one-sentence conclusion.",
       href: "/coach/session/ex-2",
     },
     {
       title: "Filler-aware re-answer practice",
-      description: "Re-answer a question and compare filler counts between attempts.",
+      description:
+        "Re-answer a question and compare filler counts between attempts.",
       href: "/coach/session/ex-3",
     },
   ],
@@ -473,17 +486,51 @@ export const COACH_EXERCISES: CoachExercise[] = [
 ];
 
 export const PROGRESS_SERIES: ProgressPoint[] = [
-  { label: "8 Oct", technicalScore: 58, communicationScore: 52, wordsPerMinute: 118 },
-  { label: "12 Oct", technicalScore: 61, communicationScore: 55, wordsPerMinute: 121 },
-  { label: "15 Oct", technicalScore: 64, communicationScore: 58, wordsPerMinute: 122 },
-  { label: "19 Oct", technicalScore: 67, communicationScore: 60, wordsPerMinute: 125 },
-  { label: "22 Oct", technicalScore: 69, communicationScore: 63, wordsPerMinute: 126 },
-  { label: "24 Oct", technicalScore: 72, communicationScore: 64, wordsPerMinute: 128 },
+  {
+    label: "8 Oct",
+    technicalScore: 58,
+    communicationScore: 52,
+    wordsPerMinute: 118,
+  },
+  {
+    label: "12 Oct",
+    technicalScore: 61,
+    communicationScore: 55,
+    wordsPerMinute: 121,
+  },
+  {
+    label: "15 Oct",
+    technicalScore: 64,
+    communicationScore: 58,
+    wordsPerMinute: 122,
+  },
+  {
+    label: "19 Oct",
+    technicalScore: 67,
+    communicationScore: 60,
+    wordsPerMinute: 125,
+  },
+  {
+    label: "22 Oct",
+    technicalScore: 69,
+    communicationScore: 63,
+    wordsPerMinute: 126,
+  },
+  {
+    label: "24 Oct",
+    technicalScore: 72,
+    communicationScore: 64,
+    wordsPerMinute: 128,
+  },
 ];
 
 export const PRACTISED_SKILLS: PractisedSkill[] = [
   { name: "System design", sessions: 4, lastPractised: "2026-10-24T10:12:00Z" },
-  { name: "Data structures", sessions: 6, lastPractised: "2026-10-19T15:40:00Z" },
+  {
+    name: "Data structures",
+    sessions: 6,
+    lastPractised: "2026-10-19T15:40:00Z",
+  },
   { name: "Databases", sessions: 3, lastPractised: "2026-10-24T10:12:00Z" },
   { name: "Communication", sessions: 5, lastPractised: "2026-10-22T14:00:00Z" },
   { name: "Behavioural", sessions: 2, lastPractised: "2026-10-12T11:30:00Z" },

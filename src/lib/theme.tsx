@@ -1,4 +1,13 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+"use client";
+
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 
 export type Theme = "light" | "dark" | "system";
 
@@ -11,7 +20,8 @@ function getSystemPrefersDark(): boolean {
 
 export function applyThemeToDocument(theme: Theme) {
   if (typeof document === "undefined") return;
-  const dark = theme === "dark" || (theme === "system" && getSystemPrefersDark());
+  const dark =
+    theme === "dark" || (theme === "system" && getSystemPrefersDark());
   document.documentElement.classList.toggle("dark", dark);
   document.documentElement.style.colorScheme = dark ? "dark" : "light";
 }
@@ -19,7 +29,9 @@ export function applyThemeToDocument(theme: Theme) {
 function readStoredTheme(): Theme {
   if (typeof window === "undefined") return "system";
   const stored = window.localStorage.getItem(STORAGE_KEY);
-  return stored === "light" || stored === "dark" || stored === "system" ? stored : "system";
+  return stored === "light" || stored === "dark" || stored === "system"
+    ? stored
+    : "system";
 }
 
 type ThemeContextValue = {
@@ -39,7 +51,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setSystemDark(getSystemPrefersDark());
 
     const media = window.matchMedia("(prefers-color-scheme: dark)");
-    const onChange = (event: MediaQueryListEvent) => setSystemDark(event.matches);
+    const onChange = (event: MediaQueryListEvent) =>
+      setSystemDark(event.matches);
     media.addEventListener("change", onChange);
     return () => media.removeEventListener("change", onChange);
   }, []);
@@ -65,7 +78,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     };
   }, [theme, systemDark]);
 
-  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
+  return (
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+  );
 }
 
 export function useTheme(): ThemeContextValue {

@@ -1,4 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+"use client";
+
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Download, ShieldCheck, Trash2 } from "lucide-react";
 
@@ -16,29 +18,16 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { DEMO_INTERVIEWS } from "@/data/fixtures";
 import { formatDate } from "@/lib/format";
-
-export const Route = createFileRoute("/_app/settings/privacy")({
-  head: () => ({
-    meta: [
-      { title: "Consent & data controls — MockMate Interview Coach" },
-      {
-        name: "description",
-        content: "Consent history, audio processing choices and demo data controls.",
-      },
-      { property: "og:title", content: "Consent & data controls — MockMate" },
-      {
-        property: "og:description",
-        content: "Consent history, audio processing choices and data controls.",
-      },
-      { property: "og:type", content: "website" },
-    ],
-  }),
-  component: PrivacyPage,
-});
 
 const consentHistory = [
   {
@@ -55,7 +44,8 @@ const consentHistory = [
   {
     date: "2026-10-08T18:20:09Z",
     label: "Audio retention declined",
-    detail: "Optional. Retained audio would allow you to replay your answers later.",
+    detail:
+      "Optional. Retained audio would allow you to replay your answers later.",
   },
   {
     date: "2026-10-19T15:35:00Z",
@@ -64,13 +54,18 @@ const consentHistory = [
   },
 ];
 
-function PrivacyPage() {
+export default function PrivacyPage() {
   const [retention, setRetention] = useState(false);
   const [improvement, setImprovement] = useState(false);
 
   useEffect(() => {
-    setRetention(window.localStorage.getItem("interview-coach-retain-audio") === "true");
-    setImprovement(window.localStorage.getItem("interview-coach-improvement-consent") === "true");
+    setRetention(
+      window.localStorage.getItem("interview-coach-retain-audio") === "true",
+    );
+    setImprovement(
+      window.localStorage.getItem("interview-coach-improvement-consent") ===
+        "true",
+    );
   }, []);
 
   return (
@@ -82,14 +77,16 @@ function PrivacyPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base flex items-center gap-2">
-              <ShieldCheck className="size-4 text-primary" aria-hidden /> How this demo handles data
+              <ShieldCheck className="size-4 text-primary" aria-hidden /> How
+              this demo handles data
             </CardTitle>
             <CardDescription className="text-sm leading-relaxed">
-              This demonstration build has no server and no account system. Configuration and
-              locally created sessions stay in your browser's local storage. In a connected build,
-              audio and transcripts are processed to produce reports — that processing is not
-              private from the AI provider that performs it, and this demo deliberately makes no
-              claim otherwise.
+              This demonstration build has no server and no account system.
+              Configuration and locally created sessions stay in your browser's
+              local storage. In a connected build, audio and transcripts are
+              processed to produce reports — that processing is not private from
+              the AI provider that performs it, and this demo deliberately makes
+              no claim otherwise.
             </CardDescription>
           </CardHeader>
         </Card>
@@ -104,27 +101,34 @@ function PrivacyPage() {
           <CardContent className="space-y-5">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-medium">Retain interview audio for review</p>
+                <p className="text-sm font-medium">
+                  Retain interview audio for review
+                </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Lets you replay your own answers after the session. If enabled, audio would be
-                  stored until you delete it.
+                  Lets you replay your own answers after the session. If
+                  enabled, audio would be stored until you delete it.
                 </p>
               </div>
               <Switch
                 checked={retention}
                 onCheckedChange={(checked) => {
                   setRetention(checked);
-                  window.localStorage.setItem("interview-coach-retain-audio", String(checked));
+                  window.localStorage.setItem(
+                    "interview-coach-retain-audio",
+                    String(checked),
+                  );
                 }}
                 aria-label="Retain interview audio for review"
               />
             </div>
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-sm font-medium">Allow anonymised use to improve the product</p>
+                <p className="text-sm font-medium">
+                  Allow anonymised use to improve the product
+                </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Off by default. Would share anonymised excerpts for product improvement. No such
-                  pipeline exists in this demo.
+                  Off by default. Would share anonymised excerpts for product
+                  improvement. No such pipeline exists in this demo.
                 </p>
               </div>
               <Switch
@@ -147,7 +151,9 @@ function PrivacyPage() {
             <CardTitle className="text-base flex items-center gap-2">
               Consent history <DemoLabel />
             </CardTitle>
-            <CardDescription>Recorded consent events for this demo profile.</CardDescription>
+            <CardDescription>
+              Recorded consent events for this demo profile.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <ol className="space-y-4">
@@ -167,8 +173,8 @@ function PrivacyPage() {
           <CardHeader>
             <CardTitle className="text-base">Data controls</CardTitle>
             <CardDescription>
-              Export and deletion are demo interactions — they affect only this browser's local
-              storage and never a server.
+              Export and deletion are demo interactions — they affect only this
+              browser's local storage and never a server.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-3">
@@ -179,8 +185,12 @@ function PrivacyPage() {
                   note: "MockMate demo export — local demonstration data only",
                   exportedAt: new Date().toISOString(),
                   consentHistory,
-                  locallyCreatedSessions: window.localStorage.getItem("interview-coach-sessions"),
-                  lastConfig: window.localStorage.getItem("interview-coach-last-config"),
+                  locallyCreatedSessions: window.localStorage.getItem(
+                    "interview-coach-sessions",
+                  ),
+                  lastConfig: window.localStorage.getItem(
+                    "interview-coach-last-config",
+                  ),
                   sampleInterviews: DEMO_INTERVIEWS,
                 };
                 const blob = new Blob([JSON.stringify(payload, null, 2)], {
@@ -204,21 +214,27 @@ function PrivacyPage() {
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Clear all locally stored demo data?</AlertDialogTitle>
+                  <AlertDialogTitle>
+                    Clear all locally stored demo data?
+                  </AlertDialogTitle>
                   <AlertDialogDescription>
-                    This removes locally created demo sessions, your last configuration and saved
-                    preferences from this browser. Sample fixtures used by the demo are not
-                    deletable. Nothing is stored on a server, so there is nothing further to delete.
+                    This removes locally created demo sessions, your last
+                    configuration and saved preferences from this browser.
+                    Sample fixtures used by the demo are not deletable. Nothing
+                    is stored on a server, so there is nothing further to
+                    delete.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Keep my data</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={() => {
-                      const keys = Object.keys(window.localStorage).filter((key) =>
-                        key.startsWith("interview-coach-"),
+                      const keys = Object.keys(window.localStorage).filter(
+                        (key) => key.startsWith("interview-coach-"),
                       );
-                      keys.forEach((key) => window.localStorage.removeItem(key));
+                      keys.forEach((key) =>
+                        window.localStorage.removeItem(key),
+                      );
                       window.location.href = "/dashboard";
                     }}
                   >
@@ -232,7 +248,10 @@ function PrivacyPage() {
 
         <p className="text-xs text-muted-foreground">
           Questions about consent? The{" "}
-          <Link to="/settings/privacy" className="text-primary hover:underline">
+          <Link
+            href="/settings/privacy"
+            className="text-primary hover:underline"
+          >
             consent choices you make in the interview wizard
           </Link>{" "}
           are recorded here.

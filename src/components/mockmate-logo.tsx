@@ -12,6 +12,7 @@ import logoLockupDark from "@/assets/mockmate_logo_dark.png";
  * both themes. The lockup ships in a light and a dark lettering variant.
  */
 export function LogoMark({ className = "" }: { className?: string }) {
+  const src = typeof logoMark === "string" ? logoMark : logoMark.src;
   return (
     <span
       className={cn(
@@ -19,22 +20,31 @@ export function LogoMark({ className = "" }: { className?: string }) {
         className,
       )}
     >
-      <img src={logoMark} alt="" aria-hidden className="h-[86%] w-[86%] object-contain" />
+      <img
+        src={src}
+        alt=""
+        aria-hidden
+        className="h-[86%] w-[86%] object-contain"
+      />
     </span>
   );
 }
 
 export function LogoLockup({ className = "" }: { className?: string }) {
+  const lightSrc =
+    typeof logoLockupLight === "string" ? logoLockupLight : logoLockupLight.src;
+  const darkSrc =
+    typeof logoLockupDark === "string" ? logoLockupDark : logoLockupDark.src;
   return (
     <span className={cn("inline-flex shrink-0 items-center", className)}>
       <img
-        src={logoLockupLight}
+        src={lightSrc}
         alt=""
         aria-hidden
         className="h-full w-auto object-contain dark:hidden"
       />
       <img
-        src={logoLockupDark}
+        src={darkSrc}
         alt=""
         aria-hidden
         className="hidden h-full w-auto object-contain dark:block"

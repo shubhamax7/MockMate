@@ -1,4 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+"use client";
+
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Monitor, Moon, Sun } from "lucide-react";
 
@@ -23,49 +25,60 @@ import {
 import { useTheme, type Theme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_app/settings/")({
-  head: () => ({
-    meta: [
-      { title: "Settings — MockMate Interview Coach" },
-      {
-        name: "description",
-        content: "Appearance, interview language, feedback timing and demo data controls.",
-      },
-      { property: "og:title", content: "Settings — MockMate Interview Coach" },
-      { property: "og:description", content: "Preferences, appearance and privacy settings." },
-      { property: "og:type", content: "website" },
-    ],
-  }),
-  component: SettingsPage,
-});
-
-const themeOptions: { value: Theme; label: string; icon: typeof Sun; hint: string }[] = [
-  { value: "light", label: "Light", icon: Sun, hint: "Bright surfaces for well-lit rooms" },
-  { value: "dark", label: "Dark", icon: Moon, hint: "Deep ocean navy surfaces" },
-  { value: "system", label: "System", icon: Monitor, hint: "Follow your device setting" },
+const themeOptions: {
+  value: Theme;
+  label: string;
+  icon: typeof Sun;
+  hint: string;
+}[] = [
+  {
+    value: "light",
+    label: "Light",
+    icon: Sun,
+    hint: "Bright surfaces for well-lit rooms",
+  },
+  {
+    value: "dark",
+    label: "Dark",
+    icon: Moon,
+    hint: "Deep ocean navy surfaces",
+  },
+  {
+    value: "system",
+    label: "System",
+    icon: Monitor,
+    hint: "Follow your device setting",
+  },
 ];
 
-function SettingsPage() {
+export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const [language, setLanguage] = useState("english");
   const [feedbackTiming, setFeedbackTiming] = useState("after-attempt");
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setLanguage(window.localStorage.getItem("interview-coach-language") ?? "english");
+    setLanguage(
+      window.localStorage.getItem("interview-coach-language") ?? "english",
+    );
     setFeedbackTiming(
-      window.localStorage.getItem("interview-coach-feedback-timing") ?? "after-attempt",
+      window.localStorage.getItem("interview-coach-feedback-timing") ??
+        "after-attempt",
     );
     setHydrated(true);
   }, []);
 
   useEffect(() => {
-    if (hydrated) window.localStorage.setItem("interview-coach-language", language);
+    if (hydrated)
+      window.localStorage.setItem("interview-coach-language", language);
   }, [language, hydrated]);
 
   useEffect(() => {
     if (hydrated)
-      window.localStorage.setItem("interview-coach-feedback-timing", feedbackTiming);
+      window.localStorage.setItem(
+        "interview-coach-feedback-timing",
+        feedbackTiming,
+      );
   }, [feedbackTiming, hydrated]);
 
   return (
@@ -78,7 +91,8 @@ function SettingsPage() {
           <CardHeader>
             <CardTitle className="text-base">Appearance</CardTitle>
             <CardDescription>
-              Choose how MockMate looks. The selection persists across navigation and refreshes.
+              Choose how MockMate looks. The selection persists across
+              navigation and refreshes.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -106,7 +120,9 @@ function SettingsPage() {
                   >
                     <Icon className="size-4" aria-hidden />
                     <p className="mt-2 text-sm font-medium">{option.label}</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{option.hint}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      {option.hint}
+                    </p>
                   </button>
                 );
               })}
@@ -118,12 +134,15 @@ function SettingsPage() {
           <CardHeader>
             <CardTitle className="text-base">Interview preferences</CardTitle>
             <CardDescription>
-              Language and coaching feedback timing used when you start a new session.
+              Language and coaching feedback timing used when you start a new
+              session.
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-5 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="preferred-language">Preferred interview language</Label>
+              <Label htmlFor="preferred-language">
+                Preferred interview language
+              </Label>
               <Select value={language} onValueChange={setLanguage}>
                 <SelectTrigger id="preferred-language">
                   <SelectValue />
@@ -136,8 +155,9 @@ function SettingsPage() {
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">
-                Only English is wired up in this demonstration build; other options stay visible
-                but disabled rather than pretending to work.
+                Only English is wired up in this demonstration build; other
+                options stay visible but disabled rather than pretending to
+                work.
               </p>
             </div>
             <div className="space-y-2">
@@ -147,13 +167,20 @@ function SettingsPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="instant">Instant — as I practise</SelectItem>
-                  <SelectItem value="after-attempt">After each attempt</SelectItem>
-                  <SelectItem value="end">Only at the end of the exercise</SelectItem>
+                  <SelectItem value="instant">
+                    Instant — as I practise
+                  </SelectItem>
+                  <SelectItem value="after-attempt">
+                    After each attempt
+                  </SelectItem>
+                  <SelectItem value="end">
+                    Only at the end of the exercise
+                  </SelectItem>
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">
-                Applies to guided practice only. Mock interviews never show feedback mid-session.
+                Applies to guided practice only. Mock interviews never show
+                feedback mid-session.
               </p>
             </div>
           </CardContent>
@@ -165,19 +192,20 @@ function SettingsPage() {
               Consent & privacy <DemoLabel />
             </CardTitle>
             <CardDescription>
-              Consent choices, audio retention and data controls live on the privacy page.
+              Consent choices, audio retention and data controls live on the
+              privacy page.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Button variant="outline" asChild>
-              <Link to="/settings/privacy">Open consent & data controls</Link>
+              <Link href="/settings/privacy">Open consent & data controls</Link>
             </Button>
           </CardContent>
         </Card>
 
         <p className="text-xs text-muted-foreground">
-          This demo has no account system — the "Demo user" profile is a labelled placeholder and
-          nothing here is stored on a server.
+          This demo has no account system — the "Demo user" profile is a
+          labelled placeholder and nothing here is stored on a server.
         </p>
       </div>
     </AppShell>

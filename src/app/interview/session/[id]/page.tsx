@@ -1,4 +1,8 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import {
   Camera,
   Captions,
@@ -26,26 +30,15 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { getInterviewScript, getSession, markReportAvailable } from "@/lib/repo";
+import { DEMO_INTERVIEWS } from "@/data/fixtures";
+import {
+  getInterviewScript,
+  getSession,
+  markReportAvailable,
+  type StoredSession,
+} from "@/lib/repo";
 import { formatClock, modeLabel, roleLabel } from "@/lib/format";
 import { cn } from "@/lib/utils";
-
-export const Route = createFileRoute("/interview/session/$id")({
-  head: () => ({
-    meta: [
-      { title: "Live interview — MockMate Interview Coach" },
-      {
-        name: "description",
-        content:
-          "Focused live interview view: the AI interviewer on one side, your camera on the other, live transcription below.",
-      },
-      { property: "og:title", content: "Live interview — MockMate" },
-      { property: "og:description", content: "The focused interview experience." },
-      { property: "og:type", content: "website" },
-    ],
-  }),
-  component: SessionPage,
-});
 
 type Phase =
   | "connecting"
@@ -68,10 +61,21 @@ const PHASE_LABELS: Record<Phase, string> = {
 
 const TYPING_SPEED_MS = 28;
 
-function SessionPage() {
-  const { id } = Route.useParams();
-  const navigate = useNavigate();
-  const session = getSession(id);
+export default function SessionPage() {
+  const params = useParams<{ id: string }>();
+  const id = params?.id ?? "";
+  const router = useRouter();
+  const [session, setSession] = useState<StoredSession | undefined>(() => {
+    return DEMO_INTERVIEWS.some((d) => d.id === id)
+      ? getSession(id)
+      : undefined;
+  });
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setSession(getSession(id));
+  }, [id]);
 
   const [phase, setPhase] = useState<Phase>("connecting");
   const [questionIndex, setQuestionIndex] = useState(0);
@@ -86,7 +90,9 @@ function SessionPage() {
   const streamRef = useRef<MediaStream | null>(null);
 
   // Load the scripted demo question bank after mount (keeps module scope SSR-safe).
-  const [questions, setQuestions] = useState<ReturnType<typeof getInterviewScript> | null>(null);
+  const [questions, setQuestions] = useState<ReturnType<
+    typeof getInterviewScript
+  > | null>(null);
   useEffect(() => {
     if (session) setQuestions(getInterviewScript());
   }, [session]);
@@ -159,7 +165,10 @@ function SessionPage() {
       const timer = setTimeout(() => setPhase("listening"), 700);
       return () => clearTimeout(timer);
     }
-    const timer = setTimeout(() => setTypedLength((n) => n + 1), TYPING_SPEED_MS);
+    const timer = setTimeout(
+      () => setTypedLength((n) => n + 1),
+      TYPING_SPEED_MS,
+    );
     return () => clearTimeout(timer);
   }, [phase, typedLength, questionIndex, questions]);
 
@@ -181,10 +190,10 @@ function SessionPage() {
     if (phase !== "completing") return;
     const timer = setTimeout(() => {
       if (session) markReportAvailable(session.summary.id);
-      navigate({ to: "/interview/report/$id", params: { id } });
+      router.push(`/interview/report/${id}`);
     }, 1800);
     return () => clearTimeout(timer);
-  }, [phase, session, navigate, id]);
+  }, [phase, session, router, id]);
 
   useEffect(() => {
     if (phase === "completing") return;
@@ -192,18 +201,28 @@ function SessionPage() {
     return () => clearInterval(interval);
   }, [phase]);
 
+  if (!mounted && !session) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <p className="text-sm text-muted-foreground">Loading session…</p>
+      </div>
+    );
+  }
+
   if (!session) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <Card className="max-w-md">
           <CardContent className="flex flex-col items-center gap-3 py-10 text-center">
             <CircleAlert className="size-6 text-warning" aria-hidden />
-            <p className="text-sm font-medium">This interview session doesn't exist</p>
+            <p className="text-sm font-medium">
+              This interview session doesn&apos;t exist
+            </p>
             <p className="text-sm text-muted-foreground">
               Sessions are created locally by the setup wizard in this demo.
             </p>
             <Button asChild>
-              <a href="/interview/new">Set up an interview</a>
+              <Link href="/interview/new">Set up an interview</Link>
             </Button>
           </CardContent>
         </Card>
@@ -211,15 +230,17 @@ function SessionPage() {
     );
   }
 
-  const { config, summary } = session;
+  const { summary } = session;
   const current = questions?.[questionIndex];
-  const typedLine = current ? current.interviewerLine.slice(0, typedLength) : "";
+  const typedLine = current
+    ? current.interviewerLine.slice(0, typedLength)
+    : "";
   const totalQuestions = questions?.length ?? 5;
   const interviewerSpeaking = phase === "interviewer";
 
   const endNow = () => {
     if (session) markReportAvailable(session.summary.id);
-    navigate({ to: "/interview/report/$id", params: { id } });
+    router.push(`/interview/report/${id}`);
   };
 
   return (
@@ -231,14 +252,17 @@ function SessionPage() {
             <span className="flex size-7 shrink-0 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground">
               M
             </span>
-            <span className="truncate text-sm font-semibold tracking-tight">MockMate</span>
+            <span className="truncate text-sm font-semibold tracking-tight">
+              MockMate
+            </span>
             <span className="hidden text-xs text-muted-foreground sm:inline">
               · {modeLabel(summary.mode)} · {roleLabel(summary.role)}
             </span>
           </div>
           <div className="flex items-center gap-2">
             <span className="hidden rounded-md border border-border bg-secondary px-2.5 py-1 text-xs font-medium tabular-nums sm:inline">
-              Q {Math.min(questionIndex + 1, totalQuestions)}/{totalQuestions} · {formatClock(elapsed)}
+              Q {Math.min(questionIndex + 1, totalQuestions)}/{totalQuestions} ·{" "}
+              {formatClock(elapsed)}
             </span>
             <DemoLabel />
             <AlertDialog>
@@ -251,13 +275,16 @@ function SessionPage() {
                 <AlertDialogHeader>
                   <AlertDialogTitle>End this interview now?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    The interview stops here and your report is generated from the answers so far
-                    — fewer answers mean thinner evidence. This action can't be undone.
+                    The interview stops here and your report is generated from
+                    the answers so far — fewer answers mean thinner evidence.
+                    This action can&apos;t be undone.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Keep going</AlertDialogCancel>
-                  <AlertDialogAction onClick={endNow}>End interview</AlertDialogAction>
+                  <AlertDialogAction onClick={endNow}>
+                    End interview
+                  </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
@@ -273,7 +300,9 @@ function SessionPage() {
             aria-label="AI interviewer"
             className={cn(
               "relative flex min-h-[240px] items-center justify-center overflow-hidden rounded-xl border bg-card sm:min-h-[320px]",
-              interviewerSpeaking ? "border-primary ring-2 ring-primary/40" : "border-border",
+              interviewerSpeaking
+                ? "border-primary ring-2 ring-primary/40"
+                : "border-border",
             )}
           >
             <div className="relative">
@@ -281,10 +310,12 @@ function SessionPage() {
                 aria-hidden
                 className={cn(
                   "absolute -inset-2 rounded-full border-2 transition-opacity",
-                  interviewerSpeaking ? "animate-pulse border-primary/60 opacity-100" : "border-transparent opacity-0",
+                  interviewerSpeaking
+                    ? "animate-pulse border-primary/60 opacity-100"
+                    : "border-transparent opacity-0",
                 )}
               />
-              <img
+              <Image
                 src={interviewerAvatar}
                 alt="AI interviewer avatar (illustrative, not a real person)"
                 width={816}
@@ -319,17 +350,33 @@ function SessionPage() {
               <div className="flex size-full flex-col items-center justify-center gap-2 p-6 text-center">
                 {cameraState === "requesting" ? (
                   <>
-                    <Camera className="size-6 animate-pulse text-muted-foreground" aria-hidden />
-                    <p className="text-sm text-muted-foreground">Requesting camera access…</p>
+                    <Camera
+                      className="size-6 animate-pulse text-muted-foreground"
+                      aria-hidden
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      Requesting camera access…
+                    </p>
                   </>
                 ) : (
                   <>
-                    <VideoOff className="size-6 text-muted-foreground" aria-hidden />
+                    <VideoOff
+                      className="size-6 text-muted-foreground"
+                      aria-hidden
+                    />
                     <p className="text-sm font-medium">
-                      {cameraState === "denied" ? "Camera off" : "Camera unavailable"}
+                      {cameraState === "denied"
+                        ? "Camera off"
+                        : "Camera unavailable"}
                     </p>
-                    <p className="max-w-xs text-xs text-muted-foreground">{cameraMessage}</p>
-                    <Button variant="outline" size="sm" onClick={() => void startCamera()}>
+                    <p className="max-w-xs text-xs text-muted-foreground">
+                      {cameraMessage}
+                    </p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => void startCamera()}
+                    >
                       Retry camera
                     </Button>
                   </>
@@ -340,7 +387,12 @@ function SessionPage() {
               <p className="absolute right-3 top-3 flex items-center gap-1.5 rounded-md bg-background/85 px-2.5 py-1 text-xs font-medium backdrop-blur">
                 <span
                   aria-hidden
-                  className={cn("size-2 rounded-full", muted ? "bg-muted-foreground" : "animate-pulse bg-destructive")}
+                  className={cn(
+                    "size-2 rounded-full",
+                    muted
+                      ? "bg-muted-foreground"
+                      : "animate-pulse bg-destructive",
+                  )}
                 />
                 {muted ? "Paused" : "Rec (simulated)"}
               </p>
@@ -352,8 +404,16 @@ function SessionPage() {
         </div>
 
         {/* Controls */}
-        <div className="flex flex-wrap items-center justify-center gap-2" role="toolbar" aria-label="Interview controls">
-          <Button variant={muted ? "secondary" : "outline"} size="sm" onClick={() => setMuted((m) => !m)}>
+        <div
+          className="flex flex-wrap items-center justify-center gap-2"
+          role="toolbar"
+          aria-label="Interview controls"
+        >
+          <Button
+            variant={muted ? "secondary" : "outline"}
+            size="sm"
+            onClick={() => setMuted((m) => !m)}
+          >
             {muted ? <Mic className="size-4" /> : <MicOff className="size-4" />}
             {muted ? "Unmute (demo)" : "Mute microphone"}
           </Button>
@@ -363,20 +423,25 @@ function SessionPage() {
             onClick={() => setCaptionsOn((c) => !c)}
             aria-pressed={captionsOn}
           >
-            <Captions className="size-4" /> {captionsOn ? "Hide transcription" : "Show transcription"}
+            <Captions className="size-4" />{" "}
+            {captionsOn ? "Hide transcription" : "Show transcription"}
           </Button>
           <span className="flex items-center gap-1.5 rounded-md border border-border bg-secondary px-2.5 py-1.5 text-xs text-muted-foreground">
             <Radio className="size-3.5" aria-hidden />
             Connection: simulated · stable
           </span>
           <span className="rounded-md border border-border bg-secondary px-2.5 py-1.5 text-xs text-muted-foreground tabular-nums sm:hidden">
-            Q {Math.min(questionIndex + 1, totalQuestions)}/{totalQuestions} · {formatClock(elapsed)}
+            Q {Math.min(questionIndex + 1, totalQuestions)}/{totalQuestions} ·{" "}
+            {formatClock(elapsed)}
           </span>
         </div>
 
         {/* Transcription */}
         {captionsOn && (
-          <section aria-label="Live transcription" className="rounded-xl border border-border bg-card">
+          <section
+            aria-label="Live transcription"
+            className="rounded-xl border border-border bg-card"
+          >
             <div className="border-b border-border px-4 py-2.5">
               <p className="inline-flex items-center gap-2 rounded-md bg-secondary px-2 py-0.5 text-xs font-medium text-secondary-foreground">
                 Transcription
@@ -384,35 +449,42 @@ function SessionPage() {
               </p>
             </div>
             <div className="px-4 py-4" role="log" aria-live="polite">
-              <p className="text-sm leading-relaxed">
-                {typedLine || "…"}
-              </p>
+              <p className="text-sm leading-relaxed">{typedLine || "…"}</p>
               {phase === "listening" && (
                 <p className="mt-2 text-sm italic text-muted-foreground">
-                  [You are answering — your spoken words appear here in a connected build.]
+                  [You are answering — your spoken words appear here in a
+                  connected build.]
                 </p>
               )}
               {phase === "connecting" && (
-                <p className="text-sm text-muted-foreground">Establishing the demo session…</p>
+                <p className="text-sm text-muted-foreground">
+                  Establishing the demo session…
+                </p>
               )}
               {phase === "ready" && (
                 <p className="text-sm text-muted-foreground">
-                  Connected. The interviewer will ask the first question in a moment.
+                  Connected. The interviewer will ask the first question in a
+                  moment.
                 </p>
               )}
               {phase === "processing" && (
-                <p className="text-sm text-muted-foreground">Recording your response… (simulated)</p>
+                <p className="text-sm text-muted-foreground">
+                  Recording your response… (simulated)
+                </p>
               )}
               {phase === "completing" && (
-                <p className="text-sm text-muted-foreground">Wrapping up and generating the report…</p>
+                <p className="text-sm text-muted-foreground">
+                  Wrapping up and generating the report…
+                </p>
               )}
             </div>
           </section>
         )}
 
         <p className="text-center text-xs text-muted-foreground">
-          Demo simulation — the interviewer's questions come from a scripted bank and no live AI is
-          connected. Mode A policy: no hints, scores or model answers until the report.
+          Demo simulation — the interviewer&apos;s questions come from a
+          scripted bank and no live AI is connected. Mode A policy: no hints,
+          scores or model answers until the report.
         </p>
       </main>
     </div>

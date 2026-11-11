@@ -1,0 +1,219 @@
+@import "tailwindcss" source(none);
+@source "..";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Ocean & Teal design system.
+ *
+ * Canonical brand palette (exact values, do not replace):
+ *   Light: bg #F0FDFA · surface #FFFFFF · accent #0EA5A4 · text #17313B ·
+ *          secondary text #607781 · borders #D5E9E7
+ *   Dark:  bg #0B1220 · surface #141F30 · accent #0EA5A4 · text #F1F7F8 ·
+ *          secondary text #A6BBC2 · borders #2A3C4B
+ */
+
+@theme inline {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-logo-tile: var(--logo-tile);
+}
+
+:root {
+  --radius: 0.625rem;
+
+  /* Canonical Ocean & Teal — light theme */
+  --background: #f0fdfa;
+  --foreground: #17313b;
+  --card: #ffffff;
+  --card-foreground: #17313b;
+  --popover: #ffffff;
+  --popover-foreground: #17313b;
+  --primary: #0ea5a4;
+  --primary-foreground: #062e2e;
+  --primary-hover: #0f8e8b;
+  --secondary: #e5f6f3;
+  --secondary-foreground: #17313b;
+  --muted: #eaf5f3;
+  --muted-foreground: #607781;
+  --accent: #eaf5f3;
+  --accent-foreground: #17313b;
+  --destructive: #b91c1c;
+  --destructive-foreground: #ffffff;
+  --success: #15803d;
+  --warning: #a16207;
+  --info: #0369a1;
+  --border: #d5e9e7;
+  --input: #c9e2df;
+  --ring: #0f766e;
+  --chart-1: #0ea5a4;
+  --chart-2: #14b8a6;
+  --chart-3: #0f766e;
+  --chart-4: #5eead4;
+  --chart-5: #115e59;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #17313b;
+  --sidebar-primary: #0ea5a4;
+  --sidebar-primary-foreground: #062e2e;
+  --sidebar-accent: #e5f6f3;
+  --sidebar-accent-foreground: #0f766e;
+  --sidebar-border: #d5e9e7;
+  --sidebar-ring: #0f766e;
+  /* Fixed light backing for the navy logo emblem — same value in both themes */
+  --logo-tile: #f0fdfa;
+}
+
+.dark {
+  /* Canonical Ocean & Teal — dark theme (deep ocean navy) */
+  --background: #0b1220;
+  --foreground: #f1f7f8;
+  --card: #141f30;
+  --card-foreground: #f1f7f8;
+  --popover: #1a293b;
+  --popover-foreground: #f1f7f8;
+  --primary: #0ea5a4;
+  --primary-foreground: #062e2e;
+  --primary-hover: #2dd4bf;
+  --secondary: #18283a;
+  --secondary-foreground: #f1f7f8;
+  --muted: #192a3b;
+  --muted-foreground: #a6bbc2;
+  --accent: #18283a;
+  --accent-foreground: #f1f7f8;
+  --destructive: #f87171;
+  --destructive-foreground: #0b1220;
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --info: #7dd3fc;
+  --border: #2a3c4b;
+  --input: #2a3c4b;
+  --ring: #5eead4;
+  --chart-1: #2dd4bf;
+  --chart-2: #5eead4;
+  --chart-3: #14b8a6;
+  --chart-4: #99f6e4;
+  --chart-5: #0f766e;
+  --sidebar: #101b29;
+  --sidebar-foreground: #f1f7f8;
+  --sidebar-primary: #0ea5a4;
+  --sidebar-primary-foreground: #062e2e;
+  --sidebar-accent: #18283a;
+  --sidebar-accent-foreground: #5eead4;
+  --sidebar-border: #2a3c4b;
+  --sidebar-ring: #5eead4;
+  --logo-tile: #f0fdfa;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--primary) 22%, transparent);
+    color: var(--color-foreground);
+  }
+
+  /* Focus indicator: 2px teal ring with offset, visible in both themes */
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
+/* Reduced motion: disable non-essential animation and transitions */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Print-friendly report styling */
+@media print {
+  body {
+    background: #ffffff;
+    color: #17313b;
+  }
+
+  .print-hide {
+    display: none !important;
+  }
+
+  .print-block {
+    break-inside: avoid;
+  }
+
+  a[href]::after {
+    content: "";
+  }
+}

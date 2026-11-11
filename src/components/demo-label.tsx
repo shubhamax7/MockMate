@@ -6,7 +6,10 @@ export function DemoLabel({ className }: { className?: string }) {
   return (
     <Badge
       variant="outline"
-      className={cn("border-border bg-secondary text-secondary-foreground", className)}
+      className={cn(
+        "border-border bg-secondary text-secondary-foreground",
+        className,
+      )}
     >
       Demo data
     </Badge>

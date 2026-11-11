@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import type { Metadata } from "next";
+import Link from "next/link";
 import {
   ArrowRight,
   AudioLines,
@@ -21,28 +22,20 @@ import { SiteFooter } from "@/components/layout/site-footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      {
-        title: "MockMate — Practice the interview, improve with evidence",
-      },
-      {
-        name: "description",
-        content:
-          "Realistic technical mock interviews and guided practice for B.Tech CSE students and early-career engineers, with feedback grounded in what you actually said.",
-      },
-      { property: "og:title", content: "MockMate — AI Interview & Communication Coach" },
-      {
-        property: "og:description",
-        content: "Practice the interview. Understand your performance. Improve with evidence.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
-  component: LandingPage,
-});
+export const metadata: Metadata = {
+  title: "MockMate — Practice the interview, improve with evidence",
+  description:
+    "Realistic technical mock interviews and guided practice for B.Tech CSE students and early-career engineers, with feedback grounded in what you actually said.",
+  openGraph: {
+    title: "MockMate — AI Interview & Communication Coach",
+    description:
+      "Practice the interview. Understand your performance. Improve with evidence.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
+};
 
 /* ------------------------------------------------------------------ */
 /* Hero product preview — built from real UI patterns, not an image.  */
@@ -87,19 +80,21 @@ function HeroPreview() {
           Question 3 of 5 · System design
         </p>
         <p className="mt-2 text-sm leading-relaxed sm:text-base">
-          "Design the schema for <em>orders</em> when the hot query is the last N orders per user.
-          Take me through your choices."
+          "Design the schema for <em>orders</em> when the hot query is the last
+          N orders per user. Take me through your choices."
         </p>
         <div className="mt-4 flex items-center justify-between rounded-lg border border-border bg-secondary px-3 py-2.5">
           <AudioBars />
-          <span className="text-xs text-muted-foreground">Interviewer speaking</span>
+          <span className="text-xs text-muted-foreground">
+            Interviewer speaking
+          </span>
         </div>
         {/* Transcript excerpt */}
         <div className="mt-4 rounded-lg border border-border bg-background p-3">
           <p className="text-xs font-medium text-foreground">Your answer</p>
           <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-            "I'd index on user_id plus created_at because the hot query is 'last N orders per
-            user'…"
+            "I'd index on user_id plus created_at because the hot query is 'last
+            N orders per user'…"
           </p>
         </div>
       </div>
@@ -110,23 +105,31 @@ function HeroPreview() {
         </p>
         <div className="mt-3 space-y-2">
           <div className="flex items-start gap-2.5">
-            <BadgeCheck className="mt-0.5 size-4 shrink-0 text-success" aria-hidden />
+            <BadgeCheck
+              className="mt-0.5 size-4 shrink-0 text-success"
+              aria-hidden
+            />
             <p className="text-xs leading-relaxed">
-              <span className="font-medium">Structured answers</span> — summary-first pattern at
-              4:12, Q2.
+              <span className="font-medium">Structured answers</span> —
+              summary-first pattern at 4:12, Q2.
             </p>
           </div>
           <div className="flex items-start gap-2.5">
-            <TriangleAlert className="mt-0.5 size-4 shrink-0 text-warning" aria-hidden />
+            <TriangleAlert
+              className="mt-0.5 size-4 shrink-0 text-warning"
+              aria-hidden
+            />
             <p className="text-xs leading-relaxed">
-              <span className="font-medium">Scaling arguments stay qualitative</span> — no estimates
-              in the sharding answer, 14:02.
+              <span className="font-medium">
+                Scaling arguments stay qualitative
+              </span>{" "}
+              — no estimates in the sharding answer, 14:02.
             </p>
           </div>
         </div>
         <div className="mt-3 flex gap-2">
           <Button size="sm" variant="secondary" asChild>
-            <Link to="/interview/report/$id" params={{ id: "demo-1" }}>
+            <Link href="/interview/report/demo-1">
               View a sample report <ArrowRight className="size-3.5" />
             </Link>
           </Button>
@@ -151,7 +154,9 @@ function SectionHeading({
 }) {
   return (
     <div className="max-w-2xl">
-      <p className="text-xs font-semibold uppercase tracking-wide text-primary">{eyebrow}</p>
+      <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+        {eyebrow}
+      </p>
       <h2 className="mt-2 text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
         {title}
       </h2>
@@ -166,7 +171,10 @@ function SectionHeading({
 
 function TwoModes() {
   return (
-    <section id="modes" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
+    <section
+      id="modes"
+      className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20"
+    >
       <SectionHeading
         eyebrow="Two ways to practise"
         title="Assessment conditions, or a coach on your side."
@@ -181,8 +189,9 @@ function TwoModes() {
             <h3 className="text-lg font-semibold">Realistic mock interview</h3>
           </div>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            A neutral interviewer, a timer, and questions that follow up on what you said. No hints,
-            no corrections, no model answers while the interview runs — exactly like the real thing.
+            A neutral interviewer, a timer, and questions that follow up on what
+            you said. No hints, no corrections, no model answers while the
+            interview runs — exactly like the real thing.
           </p>
           <ul className="mt-4 space-y-2 text-sm">
             {[
@@ -191,13 +200,16 @@ function TwoModes() {
               "End or interrupt the interview at any point",
             ].map((item) => (
               <li key={item} className="flex items-start gap-2">
-                <CircleDot className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden />
+                <CircleDot
+                  className="mt-0.5 size-3.5 shrink-0 text-primary"
+                  aria-hidden
+                />
                 <span className="text-muted-foreground">{item}</span>
               </li>
             ))}
           </ul>
           <Button className="mt-6 self-start" asChild>
-            <Link to="/interview/new">
+            <Link href="/interview/new">
               Start a mock interview <ArrowRight className="size-4" />
             </Link>
           </Button>
@@ -210,8 +222,9 @@ function TwoModes() {
             <h3 className="text-lg font-semibold">Guided practice coach</h3>
           </div>
           <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-            A warmer, instructional space. Ask for hints at the level you need, get explanations,
-            retry an answer and compare attempts, then study the model answer once you've tried.
+            A warmer, instructional space. Ask for hints at the level you need,
+            get explanations, retry an answer and compare attempts, then study
+            the model answer once you've tried.
           </p>
           <ul className="mt-4 space-y-2 text-sm">
             {[
@@ -220,13 +233,16 @@ function TwoModes() {
               "Attempt-to-attempt comparison — observable differences, not hype",
             ].map((item) => (
               <li key={item} className="flex items-start gap-2">
-                <CircleDot className="mt-0.5 size-3.5 shrink-0 text-primary" aria-hidden />
+                <CircleDot
+                  className="mt-0.5 size-3.5 shrink-0 text-primary"
+                  aria-hidden
+                />
                 <span className="text-muted-foreground">{item}</span>
               </li>
             ))}
           </ul>
           <Button variant="secondary" className="mt-6 self-start" asChild>
-            <Link to="/coach">
+            <Link href="/coach">
               Explore guided practice <ArrowRight className="size-4" />
             </Link>
           </Button>
@@ -249,38 +265,45 @@ function ReportPreview() {
             />
             <div className="mt-6 space-y-4 text-sm leading-relaxed text-muted-foreground">
               <p>
-                Technical and communication assessments are reported separately, each with its own
-                reliability note — never blended into a single headline number.
+                Technical and communication assessments are reported separately,
+                each with its own reliability note — never blended into a single
+                headline number.
               </p>
               <p>
-                Metrics carry their method: words per minute is calculated by code; qualitative
-                observations are model-generated from your transcript and marked as such.
+                Metrics carry their method: words per minute is calculated by
+                code; qualitative observations are model-generated from your
+                transcript and marked as such.
               </p>
               <p className="font-medium text-foreground">
-                "This is practice feedback, not a prediction of any hiring decision."
+                "This is practice feedback, not a prediction of any hiring
+                decision."
               </p>
             </div>
             <Button variant="outline" className="mt-6" asChild>
-              <Link to="/interview/report/$id" params={{ id: "demo-1" }}>
+              <Link href="/interview/report/demo-1">
                 Open the full sample report <ArrowRight className="size-4" />
               </Link>
             </Button>
           </div>
           <div className="rounded-xl border border-border bg-card p-5 sm:p-6">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <FileText className="size-3.5" aria-hidden /> Report · Mock interview · Backend · 31
-              min
+              <FileText className="size-3.5" aria-hidden /> Report · Mock
+              interview · Backend · 31 min
             </div>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <div className="rounded-lg border border-border bg-background p-3">
                 <p className="text-xs text-muted-foreground">Technical</p>
                 <p className="mt-1 text-2xl font-semibold tabular-nums">72</p>
-                <p className="text-[11px] text-muted-foreground">Medium confidence · 5 answers</p>
+                <p className="text-[11px] text-muted-foreground">
+                  Medium confidence · 5 answers
+                </p>
               </div>
               <div className="rounded-lg border border-border bg-background p-3">
                 <p className="text-xs text-muted-foreground">Communication</p>
                 <p className="mt-1 text-2xl font-semibold tabular-nums">64</p>
-                <p className="text-[11px] text-muted-foreground">Medium confidence · transcript</p>
+                <p className="text-[11px] text-muted-foreground">
+                  Medium confidence · transcript
+                </p>
               </div>
             </div>
             <div className="mt-4 space-y-3">
@@ -308,10 +331,15 @@ function ReportPreview() {
                   key={item.title}
                   className="flex items-start gap-3 rounded-lg border border-border bg-background p-3"
                 >
-                  <item.icon className={`mt-0.5 size-4 shrink-0 ${item.tone}`} aria-hidden />
+                  <item.icon
+                    className={`mt-0.5 size-4 shrink-0 ${item.tone}`}
+                    aria-hidden
+                  />
                   <div>
                     <p className="text-xs font-semibold">{item.title}</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{item.body}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">
+                      {item.body}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -343,16 +371,27 @@ function HowItWorks() {
     },
   ];
   return (
-    <section id="how-it-works" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
-      <SectionHeading eyebrow="How it works" title="From setup to a practice plan in four steps." />
+    <section
+      id="how-it-works"
+      className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20"
+    >
+      <SectionHeading
+        eyebrow="How it works"
+        title="From setup to a practice plan in four steps."
+      />
       <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {steps.map((step, index) => (
-          <li key={step.title} className="rounded-xl border border-border bg-card p-5">
+          <li
+            key={step.title}
+            className="rounded-xl border border-border bg-card p-5"
+          >
             <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-sm font-semibold text-primary-foreground tabular-nums">
               {index + 1}
             </span>
             <h3 className="mt-4 text-base font-semibold">{step.title}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{step.body}</p>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              {step.body}
+            </p>
           </li>
         ))}
       </ol>
@@ -370,15 +409,18 @@ function ResumeAndCommunication() {
               <span className="flex size-9 items-center justify-center rounded-lg bg-secondary text-secondary-foreground">
                 <FileText className="size-4" aria-hidden />
               </span>
-              <h3 className="text-lg font-semibold">Resume-grounded questions</h3>
+              <h3 className="text-lg font-semibold">
+                Resume-grounded questions
+              </h3>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Upload your resume and the interview asks about the projects you actually claim — with
-              follow-ups that probe depth instead of accepting buzzwords.
+              Upload your resume and the interview asks about the projects you
+              actually claim — with follow-ups that probe depth instead of
+              accepting buzzwords.
             </p>
             <blockquote className="mt-4 rounded-lg border-l-2 border-primary bg-background p-3 text-sm leading-relaxed">
-              "Your resume lists a REST API with authentication — what happens when two requests hit
-              the same endpoint at the same time?"
+              "Your resume lists a REST API with authentication — what happens
+              when two requests hit the same endpoint at the same time?"
             </blockquote>
             <p className="mt-3 text-xs text-muted-foreground">
               Illustrative example of follow-up behaviour in a demo session.
@@ -389,19 +431,29 @@ function ResumeAndCommunication() {
               <span className="flex size-9 items-center justify-center rounded-lg bg-secondary text-secondary-foreground">
                 <MessagesSquare className="size-4" aria-hidden />
               </span>
-              <h3 className="text-lg font-semibold">Communication you can measure</h3>
+              <h3 className="text-lg font-semibold">
+                Communication you can measure
+              </h3>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Pacing, pause patterns, filler words and turn-taking are measured from your transcript
-              and audio — each metric shown with its method, unit and confidence.
+              Pacing, pause patterns, filler words and turn-taking are measured
+              from your transcript and audio — each metric shown with its
+              method, unit and confidence.
             </p>
             <ul className="mt-4 space-y-2 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
-                <ListChecks className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
-                Per-metric reliability, with "Unavailable" and a reason when evidence is missing
+                <ListChecks
+                  className="mt-0.5 size-4 shrink-0 text-primary"
+                  aria-hidden
+                />
+                Per-metric reliability, with "Unavailable" and a reason when
+                evidence is missing
               </li>
               <li className="flex items-start gap-2">
-                <BookOpenCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                <BookOpenCheck
+                  className="mt-0.5 size-4 shrink-0 text-primary"
+                  aria-hidden
+                />
                 Meaning-preserving grammar rewrites, not style criticism
               </li>
             </ul>
@@ -440,10 +492,15 @@ function EvidenceQuality() {
               key={item.title}
               className="flex items-start gap-3 rounded-lg border border-border bg-card p-4"
             >
-              <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+              <ShieldCheck
+                className="mt-0.5 size-4 shrink-0 text-primary"
+                aria-hidden
+              />
               <div>
                 <p className="text-sm font-semibold">{item.title}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{item.body}</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {item.body}
+                </p>
               </div>
             </div>
           ))}
@@ -458,24 +515,26 @@ function ClosingCta() {
     <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 sm:pb-20">
       <div className="rounded-2xl border border-border bg-card px-6 py-12 text-center sm:px-12">
         <h2 className="mx-auto max-w-xl text-2xl font-semibold tracking-tight text-balance sm:text-3xl">
-          Practice the interview. Understand your performance. Improve with evidence.
+          Practice the interview. Understand your performance. Improve with
+          evidence.
         </h2>
         <p className="mx-auto mt-3 max-w-lg text-sm text-muted-foreground sm:text-base">
-          Start with a 15-minute mock interview or a guided drill — no setup, and all demonstration
-          data is clearly labelled.
+          Start with a 15-minute mock interview or a guided drill — no setup,
+          and all demonstration data is clearly labelled.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Button size="lg" asChild>
-            <Link to="/interview/new">
+            <Link href="/interview/new">
               Start a mock interview <ArrowRight className="size-4" />
             </Link>
           </Button>
           <Button size="lg" variant="secondary" asChild>
-            <Link to="/coach">Explore guided practice</Link>
+            <Link href="/coach">Explore guided practice</Link>
           </Button>
         </div>
         <p className="mt-5 text-xs text-muted-foreground">
-          Demonstration build — simulated interviewer and sample data, no account needed.
+          Demonstration build — simulated interviewer and sample data, no
+          account needed.
         </p>
       </div>
     </section>
@@ -484,7 +543,7 @@ function ClosingCta() {
 
 /* ------------------------------------------------------------------ */
 
-function LandingPage() {
+export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <SiteHeader />
@@ -501,20 +560,21 @@ function LandingPage() {
                 For B.Tech CSE students and early-career engineers
               </Badge>
               <h1 className="text-4xl font-semibold leading-tight tracking-tight text-balance sm:text-5xl">
-                Practice the interview. Understand your performance. Improve with evidence.
+                Practice the interview. Understand your performance. Improve
+                with evidence.
               </h1>
               <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-                Realistic technical interviews and guided practice, with feedback grounded in what
-                you actually said — not guesswork.
+                Realistic technical interviews and guided practice, with
+                feedback grounded in what you actually said — not guesswork.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Button size="lg" asChild>
-                  <Link to="/interview/new">
+                  <Link href="/interview/new">
                     Start a mock interview <ArrowRight className="size-4" />
                   </Link>
                 </Button>
                 <Button size="lg" variant="secondary" asChild>
-                  <Link to="/coach">Explore guided practice</Link>
+                  <Link href="/coach">Explore guided practice</Link>
                 </Button>
               </div>
               <dl className="mt-10 grid max-w-md grid-cols-3 gap-4 text-sm">
@@ -525,7 +585,9 @@ function LandingPage() {
                 ].map((item) => (
                   <div key={item.term}>
                     <dt className="font-semibold">{item.term}</dt>
-                    <dd className="mt-1 text-xs text-muted-foreground">{item.detail}</dd>
+                    <dd className="mt-1 text-xs text-muted-foreground">
+                      {item.detail}
+                    </dd>
                   </div>
                 ))}
               </dl>
