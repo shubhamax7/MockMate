@@ -112,10 +112,12 @@ export function markReportAvailable(id: string) {
 
 export function listInterviews(): InterviewSummary[] {
   const local = readLocalSessions().map((s) => s.summary);
-  const fixtureIds = new Set(DEMO_INTERVIEWS.map((d) => d.id));
+  const localIds = new Set(local.map((session) => session.id));
   const merged = [
     ...local,
-    ...DEMO_INTERVIEWS.filter((d) => !fixtureIds.has(d.id)),
+    // A locally persisted session is newer user-controlled demo state. If it
+    // shares an ID with a fixture, return it once and do not duplicate the row.
+    ...DEMO_INTERVIEWS.filter((fixture) => !localIds.has(fixture.id)),
   ];
   return merged.sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
